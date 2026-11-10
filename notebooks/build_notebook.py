@@ -49,7 +49,7 @@ code("""
 # ---- Run settings ----
 EVALUATE_TEST = True   # opens the sealed test split with the frozen prompts and threshold
 REPO_URL = "https://github.com/YashRenwa/uvh26-clip-zeroshot.git"
-COMMIT = "main"        # pinned to a commit hash for the submitted run
+COMMIT = "3c8a2010f30f6b2fd5e0aa24af32cb195118968b"  # code pinned for the submitted run ("main" follows the latest)
 A1_RAW = "../uvh26-pcu-counting/data/raw"   # local only, relative to the repo: Assignment 1's PNGs (skips the download)
 """)
 
