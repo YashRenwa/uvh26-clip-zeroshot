@@ -51,7 +51,8 @@ dataset revision and code patterns; never write to it.
   f8181d247d7e034f5810b2bb2a978e2739e5055dbc8b3240877c5caa1f667ff6. Residual leakage ~17.5%.
 - ST box counts, val / test: Hatchback 619/607, Sedan 379/356, SUV 347/300, MUV 223/212,
   Bus 212/147, Truck 350/339, Three-wheeler 1006/937, Two-wheeler 2981/2816, LCV 329/372,
-  Mini-bus 18/25, Tempo-traveller 21/28, Bicycle 97/95, Van 44/62, Others 4/3 (before dedup).
+  Mini-bus 18/25, Tempo-traveller 21/28, Bicycle 97/95, Van 44/62, Others 4/3 (after dedup;
+  51 exact duplicates dropped in each split, raw 6,681 / 6,350 boxes).
 - Local raw PNGs for the whole A1 pool are in ../uvh26-pcu-counting/data/raw: set UVH_RAW_ROOT to
   that path to skip downloading.
 - transformers 5.x: CLIPModel.get_image_features returns an output object; the projected

@@ -1,5 +1,5 @@
 {
-  "method": "40 random test images (numpy default_rng(seed=42).permutation), each paired with its most similar val image by 64x36 gradient-magnitude correlation g (A1 protocol); judged by eye by Yash: same / unclear / different",
+  "method": "40 random test images (numpy default_rng(seed=42).permutation), each paired with its most similar val image by 64x36 gradient-magnitude correlation g (A1 protocol); judged by eye: same / unclear / different",
   "n": 40,
   "val_images": 452,
   "test_images": 477,
@@ -26,5 +26,17 @@
     "sheet_3.jpg",
     "sheet_4.jpg"
   ],
-  "verdicts": null
+  "verdicts": {
+    "by": "Claude judged all 40 pairs by eye at Yash's request; Yash spot-checked the 4 same-camera pairs",
+    "n": 40,
+    "same_camera": 4,
+    "unclear": 0,
+    "different": 36,
+    "leakage_estimate": 0.1,
+    "leakage_95ci": [
+      0.04,
+      0.231
+    ],
+    "leakage_upper_if_unclear_count": 0.1
+  }
 }

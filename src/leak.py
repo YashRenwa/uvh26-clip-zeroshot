@@ -34,6 +34,13 @@ from src.privacy import redact
 
 A1_THUMBS = ROOT.parent / "uvh26-pcu-counting" / "data" / "prepared" / "thumbnails.npz"
 VERDICTS = ("same", "unclear", "different")
+# Attribution and finding for the 2026-11-10 audit (Yash's wording, DECISIONS.md #21-22).
+VERDICTS_BY = ("Claude judged all 40 pairs by eye at Yash's request; Yash spot-checked the "
+               "4 same-camera pairs")
+FINDING = ("Pairs #12 and #13 are the same camera at g ~ 0.25 because a large vehicle fills the frame and "
+           "hides the static scene edges. So the g-based count (18 test images with a val neighbour at "
+           "g >= 0.36, none at >= 0.48) is not an upper bound on overlap; the by-eye audit is the leakage "
+           "estimate reported.")
 
 
 def gradient_thumbnail(frame_rgb: np.ndarray) -> np.ndarray:
@@ -126,7 +133,7 @@ def draw(cfg: dict[str, Any], n: int = 40, per_sheet: int = 10) -> dict[str, Any
     summary = {
         "method": f"{n} random test images (numpy default_rng(seed={cfg['seed']}).permutation), each paired "
                   "with its most similar val image by 64x36 gradient-magnitude correlation g (A1 protocol); "
-                  "judged by eye by Yash: same / unclear / different",
+                  "judged by eye: same / unclear / different",
         "n": int(n), "val_images": len(val), "test_images": len(test),
         "g_drawn": {k: round(float(getattr(pairs["g"], k)()), 4) for k in ("min", "median", "max")},
         "g_nearest_val_all_test": {"p10": round(float(q[0]), 4), "median": round(float(q[1]), 4),
@@ -147,8 +154,8 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return round(float(max(0.0, centre - half)), 3), round(float(min(1.0, centre + half)), 3)
 
 
-def record_verdicts(cfg: dict[str, Any]) -> dict[str, Any]:
-    """Read Yash's verdicts from pairs.csv, store the estimate in summary.json and provenance.json."""
+def record_verdicts(cfg: dict[str, Any], by: str, finding: str | None = None) -> dict[str, Any]:
+    """Read the verdicts from pairs.csv, store the estimate in summary.json and provenance.json."""
     out = cfg["paths"]["results_dir"] / "leak_test_val"
     pairs = pd.read_csv(out / "pairs.csv", dtype=str, keep_default_na=False)
     v = pairs["verdict"].str.strip().str.lower()
@@ -156,15 +163,20 @@ def record_verdicts(cfg: dict[str, Any]) -> dict[str, Any]:
     if bad:
         raise ValueError(f"verdicts must be one of {VERDICTS}; found {bad}")
     n, same, unclear = len(v), int((v == "same").sum()), int((v == "unclear").sum())
-    res = {"by": "Yash", "n": n, "same_camera": same, "unclear": unclear, "different": n - same - unclear,
+    res = {"by": by, "n": n, "same_camera": same, "unclear": unclear, "different": n - same - unclear,
            "leakage_estimate": round(same / n, 3), "leakage_95ci": wilson(same, n),
            "leakage_upper_if_unclear_count": round((same + unclear) / n, 3)}
     summary = json.loads((out / "summary.json").read_text())
+    summary["method"] = summary["method"].replace("judged by eye by Yash", "judged by eye")
     summary["verdicts"] = res
     write_result("leak_test_val/summary", summary, cfg)
     prov_path = cfg["paths"]["results_dir"] / "provenance.json"
     prov = json.loads(prov_path.read_text())
     prov["test_val_leakage"] = {"method": summary["method"], **res,
+                                "same_camera_pairs": [{"rank": int(r.rank), "test_stem": r.test_stem,
+                                                       "val_stem": r.val_stem, "g": float(r.g)}
+                                                      for r in pairs[v == "same"].itertuples()],
+                                "finding": finding,
                                 "compare_a1_test_train": {"estimate": 0.175, "ci95": [0.087, 0.32]}}
     write_result("provenance", prov, cfg)
     return res
@@ -173,10 +185,11 @@ def record_verdicts(cfg: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     add_common_args(ap)
-    ap.add_argument("--record", action="store_true", help="record Yash's verdicts from pairs.csv")
+    ap.add_argument("--record", action="store_true", help="record the verdicts from pairs.csv")
+    ap.add_argument("--by", default=VERDICTS_BY, help="who judged the pairs")
     args = ap.parse_args()
     cfg = load_config(args.config, smoke=args.smoke)
-    print(json.dumps(record_verdicts(cfg) if args.record else draw(cfg), indent=2))
+    print(json.dumps(record_verdicts(cfg, args.by, FINDING) if args.record else draw(cfg), indent=2))
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 
 from src.common import add_common_args, load_config, read_split, run_header, verify_test_split, write_result
 
@@ -41,11 +42,12 @@ CONTAMINATION = {
         "data, so this tests transfer to a new camera domain, not unseen classes."
     ),
     "own_leakage": (
-        "Prompts and the review threshold are chosen on val cameras only. Test pseudo-cameras are "
-        "disjoint from val by construction; residual same-camera leakage from Assignment 1's audit is "
-        "17.5% (95% CI 8.7-32%, 40 random test images vs their most similar train image). The audit "
-        "measured test vs train; nothing is trained here, so it bounds val-to-test camera overlap only "
-        "loosely."
+        "Prompts and the review threshold are chosen on val cameras only. Test pseudo-cameras share no "
+        "group with val, but a by-eye audit (40 random test images vs their most similar val image, "
+        "A1's protocol) found 4 same-camera pairs: val-test camera overlap is about 10% (95% CI about "
+        "4-23%); see test_val_leakage. Prompts are written from class definitions first and revised at "
+        "most twice on val, so the effect of this overlap on the test numbers should be small. A1's "
+        "test-vs-train figure (17.5%, CI 8.7-32%) does not apply here because nothing is trained."
     ),
     "a1_clip_use": (
         "Assignment 1 used CLIP ViT-B/32 embeddings only to compare grouping rules; the frozen split "
@@ -86,6 +88,9 @@ def main() -> None:
     args = ap.parse_args()
     cfg = load_config(args.config, smoke=args.smoke)
 
+    path = cfg["paths"]["results_dir"] / "provenance.json"
+    keep = {k: v for k, v in (json.loads(path.read_text()) if path.exists() else {}).items()
+            if k == "test_val_leakage"}   # written by src.leak --record
     out = {
         "test_sha256": verify_test_split(cfg),
         "split": group_overlap(cfg),
@@ -93,6 +98,7 @@ def main() -> None:
         "run": run_header(cfg),
         "hub": None if args.offline else hub_revisions(cfg),
         "contamination": CONTAMINATION,
+        **keep,
     }
     assert out["split"]["groups_shared_val_test"] == 0 and out["split"]["images_shared_val_test"] == 0
     path = write_result("provenance", out, cfg)

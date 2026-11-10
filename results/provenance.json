@@ -22,7 +22,7 @@
       "matplotlib": "3.11.2",
       "torch": "2.14.1",
       "torchvision": "0.29.1",
-      "opencv-python": "5.0.0.93",
+      "opencv-python": "4.14.0.94",
       "transformers": "5.18.0",
       "huggingface-hub": "1.33.0",
       "pandas": "3.0.6",
@@ -66,7 +66,55 @@
     },
     "conclusion": "UVH-26 frames were captured in February 2025, four years after CLIP's training data was collected (model dated January 2021), so no test frame can be in CLIP's training set.",
     "caveat": "The concepts (auto-rickshaws, Indian buses, CCTV-style images) were certainly in CLIP's web data, so this tests transfer to a new camera domain, not unseen classes.",
-    "own_leakage": "Prompts and the review threshold are chosen on val cameras only. Test pseudo-cameras are disjoint from val by construction; residual same-camera leakage from Assignment 1's audit is 17.5% (95% CI 8.7-32%, 40 random test images vs their most similar train image). The audit measured test vs train; nothing is trained here, so it bounds val-to-test camera overlap only loosely.",
+    "own_leakage": "Prompts and the review threshold are chosen on val cameras only. Test pseudo-cameras share no group with val, but a by-eye audit (40 random test images vs their most similar val image, A1's protocol) found 4 same-camera pairs: val-test camera overlap is about 10% (95% CI about 4-23%); see test_val_leakage. Prompts are written from class definitions first and revised at most twice on val, so the effect of this overlap on the test numbers should be small. A1's test-vs-train figure (17.5%, CI 8.7-32%) does not apply here because nothing is trained.",
     "a1_clip_use": "Assignment 1 used CLIP ViT-B/32 embeddings only to compare grouping rules; the frozen split used 64x36 gradient-magnitude correlation, so no CLIP signal shaped the test set."
+  },
+  "test_val_leakage": {
+    "method": "40 random test images (numpy default_rng(seed=42).permutation), each paired with its most similar val image by 64x36 gradient-magnitude correlation g (A1 protocol); judged by eye: same / unclear / different",
+    "by": "Claude judged all 40 pairs by eye at Yash's request; Yash spot-checked the 4 same-camera pairs",
+    "n": 40,
+    "same_camera": 4,
+    "unclear": 0,
+    "different": 36,
+    "leakage_estimate": 0.1,
+    "leakage_95ci": [
+      0.04,
+      0.231
+    ],
+    "leakage_upper_if_unclear_count": 0.1,
+    "same_camera_pairs": [
+      {
+        "rank": 1,
+        "test_stem": "525005",
+        "val_stem": "517483",
+        "g": 0.4256
+      },
+      {
+        "rank": 2,
+        "test_stem": "802494",
+        "val_stem": "310215",
+        "g": 0.4114
+      },
+      {
+        "rank": 12,
+        "test_stem": "685600",
+        "val_stem": "702895",
+        "g": 0.2501
+      },
+      {
+        "rank": 13,
+        "test_stem": "378943",
+        "val_stem": "491228",
+        "g": 0.2478
+      }
+    ],
+    "finding": "Pairs #12 and #13 are the same camera at g ~ 0.25 because a large vehicle fills the frame and hides the static scene edges. So the g-based count (18 test images with a val neighbour at g >= 0.36, none at >= 0.48) is not an upper bound on overlap; the by-eye audit is the leakage estimate reported.",
+    "compare_a1_test_train": {
+      "estimate": 0.175,
+      "ci95": [
+        0.087,
+        0.32
+      ]
+    }
   }
 }
