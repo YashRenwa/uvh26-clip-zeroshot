@@ -77,7 +77,17 @@ def main() -> None:
     model, processor = load_model(cfg)
     cache = cfg["paths"]["cache_dir"] / f"img_emb_val{'_smoke' if cfg['smoke'] else ''}.npz"
     img_emb, timing = image_embeddings(cfg, model, processor, manifest, cache=cache)
-    res = score_arm(cfg, model, processor, manifest, img_emb, path, args.draft)
+    out, _ = run_arm(cfg, model, processor, manifest, img_emb, timing, path, args.draft)
+    print_summary(cfg, out)
+
+
+def run_arm(cfg, model, processor, manifest, img_emb, timing, path: Path, draft_ok: bool = False):
+    """Score one prompt file on val from shared embeddings; write val_<arm>.json, predictions, confusion.
+
+    Returns (summary dict, softmax array)."""
+    classes = cfg["dataset"]["classes"]
+    arm = yaml.safe_load(Path(path).read_text())["arm"]
+    res = score_arm(cfg, model, processor, manifest, img_emb, Path(path), draft_ok)
     pred, score, sm = res.pop("_pred"), res.pop("_score"), res.pop("_softmax")
     out = {"arm": arm, "split": "val", "model": cfg["model"]["id"], "model_revision": cfg["model"]["revision"],
            "seed": cfg["seed"], "pcu_factors": pcu_factors(cfg)["class_factor"], "timing": timing, **res}
@@ -89,7 +99,11 @@ def main() -> None:
         res_dir / f"val_predictions_{arm}.csv", index=False)
     cm = pd.DataFrame(out["confusion"], index=classes, columns=classes)
     cm.to_csv(res_dir / f"val_confusion_{arm}.csv")
+    return out, sm
 
+
+def print_summary(cfg, out) -> None:
+    arm, classes, timing = out["arm"], cfg["dataset"]["classes"], out["timing"]
     print(f"{arm} on val ({out['n']} crops): accuracy {out['accuracy']:.3f}, balanced {out['balanced_accuracy']:.3f}, "
           f"macro-F1 {out['macro_f1_headline']:.3f} (all present {out['macro_f1_all_present']:.3f}), "
           f"IRC accuracy {out['irc_accuracy']:.3f}, PCU MAE {out['pcu']['pcu_mae']:.2f} "
