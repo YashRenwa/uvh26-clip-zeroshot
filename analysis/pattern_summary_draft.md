@@ -33,7 +33,8 @@ pattern holds across all crops, not just the 30 drawn. Caveats: IR frames are to
 - Trucks have a **78.2% IRC error rate** (265 of 339), the highest of any class with ≥ 30 crops. Next is
   LCV at 59.1% (220 / 372).
 - Trucks are 5.4% of test crops but carry **23.8% of all per-crop PCU error** (434 of 1,823 PCU), more
-  than any other class, and they under-count (net −378 PCU): a truck read as LCV or auto loses 1.3–1.7 PCU.
+  than any other class, and they under-count (net −378 PCU): a truck (3.28 PCU) read as an auto loses 1.3
+  PCU, as an LCV 1.7, as a car 2.3.
 - The review rule does not catch them: of the 29 trucks it auto-accepts, 27 are IRC-wrong.
 - Known before test (val, DECISIONS.md #29): truck_bus was the weakest IRC category on val (217 / 580).
 

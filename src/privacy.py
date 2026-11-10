@@ -59,3 +59,45 @@ def redact(img: np.ndarray, stem: str | None = None, origin: tuple[float, float]
     for x, y, w, h in manual_boxes(stem):
         _blur(out, round((x - ox) * scale), round((y - oy) * scale), round(w * scale) + 1, round(h * scale) + 1)
     return out
+
+
+# ---------- guards shown in the notebook (ethics and privacy) ----------
+
+EMBEDDING_SUFFIXES = (".npy", ".npz", ".pt", ".pth", ".safetensors", ".pkl")
+
+
+def assert_no_embedding_files(*dirs: Path) -> int:
+    """Raise if any embedding-like array file is stored under the given folders; returns files checked."""
+    n = 0
+    for d in dirs:
+        for p in Path(d).rglob("*"):
+            n += p.is_file()
+            if p.suffix in EMBEDDING_SUFFIXES:
+                raise AssertionError(f"embedding-like file stored: {p}")
+    return n
+
+
+def closed_vocabulary_demo(cfg, model, processor) -> str:
+    """Try to build a classifier from free text that searches for people; it must be refused."""
+    import tempfile
+
+    import yaml
+
+    from src.zeroshot import text_classifier
+
+    spec = {"arm": "free_text", "templates": ["{}"],
+            "names": {c: ["a woman in a red saree riding a scooter"] for c in cfg["dataset"]["classes"]}}
+    with tempfile.TemporaryDirectory() as d:
+        path = Path(d) / "free_text.yaml"
+        path.write_text(yaml.safe_dump(spec))
+        try:
+            text_classifier(cfg, model, processor, path)
+        except PermissionError as e:
+            return f"refused: {e}"
+    raise AssertionError("a free-text prompt file was accepted")
+
+
+def face_count(img: np.ndarray) -> int:
+    """Faces the Haar cascade finds in an RGB image (for the figure check list)."""
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    return len(_face_cascade().detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(12, 12)))

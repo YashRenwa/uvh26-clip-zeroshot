@@ -81,11 +81,8 @@ def arm_metrics(cfg, d: pd.DataFrame, arm: str, t: float, low: list[str]) -> dic
                      "accepted_irc_accuracy": float((irc_true[acc] == irc_pred[acc]).mean())}}
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__)
-    add_common_args(ap)
-    args = ap.parse_args()
-    cfg = load_config(args.config)
+def run_label_check(cfg: dict[str, Any]) -> dict[str, Any]:
+    """Duplicate groups (val, test) and the secondary test metrics; writes results/label_check.json."""
     rule = json.loads((ROOT / "results" / "frozen_rule.json").read_text())
     low = json.loads((ROOT / "results" / "data_summary.json").read_text())["test"]["low_support_classes"]
     cmap = cfg["pcu"]["class_map"]
@@ -120,8 +117,16 @@ def main() -> None:
     out["test"] = res
     out["note_a1"] = "A1's labels (same ST JSONs, same dedup rule) carry the same duplicates."
     write_result("label_check", out, cfg)
+    return out
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_common_args(ap)
+    args = ap.parse_args()
+    out = run_label_check(load_config(args.config))
     print(json.dumps(out["splits"], indent=1))
-    for arm, r in res.items():
+    for arm, r in out["test"].items():
         f, a, b = r["all_crops_headline"], r["a_excluding_duplicate_groups"], r["b_lenient_all_crops"]
         print(f"{arm}: acc {f['accuracy']:.3f} -> excl {a['accuracy']:.3f}, lenient {b['accuracy']:.3f} | IRC {f['irc_accuracy']:.3f} "
               f"-> excl {a['irc_accuracy']:.3f}, lenient {b['irc_accuracy']:.3f} | mF1 {f['macro_f1_headline']:.3f} -> {a['macro_f1_headline']:.3f} "

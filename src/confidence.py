@@ -246,10 +246,23 @@ def main() -> None:
     args = ap.parse_args()
     cfg = load_config(args.config, smoke=args.smoke)
     set_seed(cfg["seed"])
+    res = run_confidence(cfg, {arm: arm_outputs(cfg, arm) for arm in args.arms})
+    for arm, r in res["arms"].items():
+        rule = r["rule"]
+        print(f"{arm}: class acc {r['class']['accuracy']:.3f} ECE {r['class']['ece']:.3f} "
+              f"(equal-mass {r['class']['ece_equal_mass']:.3f}) | IRC acc {r['irc']['accuracy']:.3f} "
+              f"ECE {r['irc']['ece']:.3f} (equal-mass {r['irc']['ece_equal_mass']:.3f})")
+        if rule["threshold"] is not None:
+            print(f"  rule: t {rule['threshold']:.4f} -> coverage {rule['coverage']:.3f}, accepted IRC acc "
+                  f"{rule['accepted_irc_accuracy']:.3f}, workload {rule['human_workload']:.3f}")
+
+
+def run_confidence(cfg: dict[str, Any], outputs: dict[str, dict[str, np.ndarray]]) -> dict[str, Any]:
+    """Val confidence analysis for the given arms' outputs; writes val_confidence.json and figures."""
     res = {"split": "val", "n_bins": cfg["confidence"]["n_bins"],
            "target_irc_accuracy": cfg["confidence"]["target_irc_accuracy"], "arms": {}}
-    for arm in args.arms:
-        res["arms"][arm] = analyse(cfg, arm_outputs(cfg, arm))
+    for arm, o in outputs.items():
+        res["arms"][arm] = analyse(cfg, o)
     shas = {r["image_embeddings_sha256"] for r in res["arms"].values()}
     assert len(shas) == 1, "arms must share one set of image embeddings"
     res["image_embeddings_shared"] = True
@@ -257,17 +270,7 @@ def main() -> None:
     res["figures"] = [str(plot_reliability(res, figs / "val_reliability.png")),
                       str(plot_coverage(res, figs / "val_coverage.png"))]
     write_result("val_confidence", res, cfg)
-    for arm, r in res["arms"].items():
-        rule = r["rule"]
-        print(f"{arm}: class acc {r['class']['accuracy']:.3f} ECE {r['class']['ece']:.3f} "
-              f"(equal-mass {r['class']['ece_equal_mass']:.3f}) | IRC acc {r['irc']['accuracy']:.3f} "
-              f"ECE {r['irc']['ece']:.3f} (equal-mass {r['irc']['ece_equal_mass']:.3f})")
-        if rule["threshold"] is None:
-            print(f"  rule: target {rule['target_irc_accuracy']:.0%} not reachable")
-        else:
-            print(f"  rule: t {rule['threshold']:.4f} -> coverage {rule['coverage']:.3f}, accepted IRC acc "
-                  f"{rule['accepted_irc_accuracy']:.3f}, workload {rule['human_workload']:.3f}, PCU MAE "
-                  f"{rule['pcu_no_review']['pcu_mae']:.2f} -> {rule['pcu_after_review']['pcu_mae']:.2f} after review")
+    return res
 
 
 if __name__ == "__main__":

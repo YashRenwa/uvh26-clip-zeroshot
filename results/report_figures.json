@@ -1,0 +1,7 @@
+{
+  "figures": {
+    "confusion_irc": "report/figures/test_confusion_irc_ensemble.png",
+    "failures_first5": "report/figures/failures_first5.png"
+  },
+  "redaction_checklist": "results/redaction_checklist.csv"
+}

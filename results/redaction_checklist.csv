@@ -1,0 +1,11 @@
+file,in_report,shows_pixels,faces_still_detected_after_redaction,checked_by_yash,plates_or_faces_to_add_to_redact_csv
+report/figures/failures_first5.png,True,True,0,,
+results/figures/val_examples.png,True,True,1,,
+results/failures/confident_sheet_1.png,False,True,0,,
+results/failures/random_sheet_1.png,False,True,1,,
+results/failures/random_sheet_2.png,False,True,2,,
+results/failures/random_sheet_3.png,False,True,1,,
+results/leak_test_val/sheet_1.jpg,False,True,3,,
+results/leak_test_val/sheet_2.jpg,False,True,4,,
+results/leak_test_val/sheet_3.jpg,False,True,1,,
+results/leak_test_val/sheet_4.jpg,False,True,1,,

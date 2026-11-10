@@ -82,7 +82,8 @@ def draw(cfg: dict[str, Any], df: pd.DataFrame, t: float) -> pd.DataFrame:
     return pd.concat([a, b])
 
 
-def render_sheet(cfg: dict[str, Any], rows: pd.DataFrame, title: str, out) -> None:
+def render_sheet(cfg: dict[str, Any], rows: pd.DataFrame, title: str, out,
+                 cause_label: str = "suggested (not a tag)") -> None:
     """One error per row: redacted crop | redacted frame with the box | tags."""
     side, fw, fh, tw, gap = 260, 462, 260, 470, 8
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -103,7 +104,7 @@ def render_sheet(cfg: dict[str, Any], rows: pd.DataFrame, title: str, out) -> No
                  f"score {r.score:.3f}   IRC score {r.irc_score:.3f}",
                  f"size {int(r.long_side)} px ({r.size_bin})   IR {'yes' if r.ir else 'no'}",
                  f"max IoU other box {r.max_iou:.2f}   edge {'yes' if r.truncated else 'no'}",
-                 f"suggested (not a tag): {r.suggested_cause}"]
+                 f"{cause_label}: {r.suggested_cause}"]
         x0 = side + fw + 2 * gap + 6
         for i, text in enumerate(lines):
             cv2.putText(block, text, (x0, 30 + 32 * i), font, 0.55, (30, 30, 30), 1, cv2.LINE_AA)
@@ -148,15 +149,13 @@ def patterns(cfg: dict[str, Any], df: pd.DataFrame, t: float) -> dict[str, pd.Da
     }
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__)
-    add_common_args(ap)
-    args = ap.parse_args()
-    cfg = load_config(args.config, smoke=args.smoke)
+def run_failures(cfg: dict[str, Any]) -> tuple[dict[str, Any], dict[str, pd.DataFrame], pd.DataFrame]:
+    """Seeded draws, redacted sheets, tag template (kept if already tagged), pattern tables."""
     rule = json.loads((ROOT / "results" / "frozen_rule.json").read_text())
     arm = rule["headline_arm"]
     t = rule["rules"][arm]["threshold"]
-    split = "val_smoke" if args.smoke else "test"
+    smoke = cfg["smoke"]
+    split = "val_smoke" if smoke else "test"
     df = load_test(cfg, arm, split)
     df["suggested_cause"] = [suggest_cause(r, cfg) for r in df.to_dict("records")]
     picks = draw(cfg, df, t)
@@ -176,8 +175,8 @@ def main() -> None:
         columns={"class": "true", "suggested_cause": "suggested_cause_NOT_A_TAG"})
     tags["cause"] = ""
     tags["note"] = ""
-    tag_path = (ROOT / "analysis" / "failure_tags.csv") if not args.smoke else res / "failure_tags.csv"
-    if tag_path.exists() and not args.smoke and pd.read_csv(tag_path)["cause"].notna().any():
+    tag_path = (ROOT / "analysis" / "failure_tags.csv") if not smoke else res / "failure_tags.csv"
+    if tag_path.exists() and not smoke and pd.read_csv(tag_path)["cause"].notna().any():
         kept = pd.read_csv(tag_path, dtype=str)
         assert kept["crop_id"].tolist() == tags["crop_id"].tolist(), "the seeded draw changed"
         print(f"{tag_path.name} already has Yash's tags: kept unchanged (same draw)")
@@ -205,6 +204,14 @@ def main() -> None:
         "patterns": {k: v.reset_index().to_dict("records") for k, v in tables.items()},
     }
     write_result("failure_patterns", out, cfg)
+    return out, tables, picks
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_common_args(ap)
+    args = ap.parse_args()
+    out, tables, _ = run_failures(load_config(args.config, smoke=args.smoke))
     print({k: out[k] for k in ("crops", "class_errors", "irc_errors", "accepted", "accepted_irc_wrong",
                                "accepted_class_wrong_irc_right")})
     for k, v in tables.items():

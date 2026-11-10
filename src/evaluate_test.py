@@ -217,18 +217,14 @@ def plot_shift(test: dict, val: dict, out_dir, tag: str) -> list[str]:
     return paths
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__)
-    add_common_args(ap)
-    ap.add_argument("--note", default="Phase 5 sealed test run")
-    args = ap.parse_args()
-    cfg = load_config(args.config, smoke=args.smoke)
+def evaluate(cfg: dict[str, Any], note: str, model=None, processor=None) -> dict[str, Any]:
+    """Score both frozen arms on test (or, under smoke, on 20 val images) and write every output."""
     set_seed(cfg["seed"])
     from src.run_val import low_support_classes, val_manifest
     from src.zeroshot import (embedding_fingerprint, image_embeddings, load_model, logit_scale, predict,
                               text_classifier)
 
-    if args.smoke:     # exercise the code on val images; test is never read
+    if cfg["smoke"]:     # exercise the code on val images; test is never read
         split, manifest = "val_smoke", val_manifest(cfg)
         rule = json.loads(FROZEN_RULE.read_text())
         info = {"thresholds": {a: rule["rules"][a]["threshold"] for a in ARMS}}
@@ -237,13 +233,14 @@ def main() -> None:
         info = guard()
         split = "test"
         manifest = pd.read_csv(ROOT / "results" / "crops_test.csv", dtype={"stem": str, "group": str})
-        log_opening(info, args.note)
+        log_opening(info, note)
         cache = None   # test embeddings stay in memory
     res_dir = cfg["paths"]["results_dir"]
     classes = cfg["dataset"]["classes"]
     low = low_support_classes()
 
-    model, processor = load_model(cfg)
+    if model is None:
+        model, processor = load_model(cfg)
     emb, timing = image_embeddings(cfg, model, processor, manifest, cache=cache)
     emb_sha = embedding_fingerprint(emb)
     true, stems = manifest["cls"].to_numpy(), manifest["stem"].to_numpy()
@@ -275,6 +272,15 @@ def main() -> None:
     pd.DataFrame(preds).to_csv(res_dir / f"{split}_predictions.csv", index=False)
     write_result(f"{split}_metrics", out, cfg)
     assert not any(p.suffix in (".npy", ".npz") for p in res_dir.rglob("*")), "no embedding arrays in results/"
+    return out
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_common_args(ap)
+    ap.add_argument("--note", default="sealed test run")
+    args = ap.parse_args()
+    out = evaluate(load_config(args.config, smoke=args.smoke), args.note)
     for arm in ARMS:
         a = out["arms"][arm]
         r = a["rule"]
