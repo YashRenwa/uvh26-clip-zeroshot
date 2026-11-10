@@ -49,8 +49,10 @@ bootstrap:
   n_resamples: 1000           # paired, over pseudo-camera groups
 
 failures:
-  n_random: 30
-  n_confident: 10
+  n_random: 30                # seeded random draw of 14-class errors (headline arm, test)
+  n_confident: 10             # seeded draw of errors that pass the review rule (IRC score >= t, IRC wrong)
+  occlusion_iou: 0.3          # suggestion only: max IoU with another GT box at or above this -> 'occlusion'
+  iou_bins: [0.0, 0.1, 0.3]   # pattern table bins: 0, (0, 0.1), [0.1, 0.3), >= 0.3
 
 # PCU: copied from Assignment 1's configs/base.yaml (IRC:106-1990, Table 1). Factor at [5%, >=10%]
 # share of the traffic stream, linear in between, 5% value below 5%. Shares from A1 train ST labels.

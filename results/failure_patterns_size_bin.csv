@@ -1,0 +1,4 @@
+size_bin,crops,class_errors,irc_errors,accepted,accepted_irc_errors,class_error_rate,irc_error_rate,share_accepted,share_of_all_irc_errors
+<32,7,4,5,0,0,0.5714,0.7143,0.0,0.0031
+32-95,1496,578,478,407,14,0.3864,0.3195,0.2721,0.2942
+>=96,4796,1774,1142,2229,112,0.3699,0.2381,0.4648,0.7028

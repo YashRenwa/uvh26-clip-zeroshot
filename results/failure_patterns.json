@@ -1,0 +1,362 @@
+{
+  "arm": "ensemble",
+  "split": "test",
+  "threshold": 0.8956350988433569,
+  "seed": 42,
+  "crops": 6299,
+  "class_errors": 2356,
+  "irc_errors": 1625,
+  "accepted": 2636,
+  "accepted_class_wrong": 432,
+  "accepted_irc_wrong": 126,
+  "accepted_class_wrong_irc_right": 306,
+  "draw": {
+    "random": {
+      "pool": 2356,
+      "n": 30
+    },
+    "confident": {
+      "pool_definition": "IRC score >= t and IRC category wrong, excluding the random draw",
+      "pool": 126,
+      "n": 10
+    },
+    "method": "numpy default_rng(seed).choice without replacement; random draw first, then confident"
+  },
+  "suggested_cause_counts_NOT_TAGS": {
+    "confident": {
+      "ir_night": 0,
+      "lookalike": 0,
+      "occlusion": 3,
+      "other": 6,
+      "small": 1,
+      "truncated": 0
+    },
+    "random": {
+      "ir_night": 1,
+      "lookalike": 5,
+      "occlusion": 5,
+      "other": 10,
+      "small": 6,
+      "truncated": 3
+    }
+  },
+  "sheets": [
+    "failures/random_sheet_1.png",
+    "failures/random_sheet_2.png",
+    "failures/random_sheet_3.png",
+    "failures/confident_sheet_1.png"
+  ],
+  "tag_template": "analysis/failure_tags.csv",
+  "patterns": {
+    "size_bin": [
+      {
+        "size_bin": "<32",
+        "crops": 7,
+        "class_errors": 4,
+        "irc_errors": 5,
+        "accepted": 0,
+        "accepted_irc_errors": 0,
+        "class_error_rate": 0.5714,
+        "irc_error_rate": 0.7143,
+        "share_accepted": 0.0,
+        "share_of_all_irc_errors": 0.0031
+      },
+      {
+        "size_bin": "32-95",
+        "crops": 1496,
+        "class_errors": 578,
+        "irc_errors": 478,
+        "accepted": 407,
+        "accepted_irc_errors": 14,
+        "class_error_rate": 0.3864,
+        "irc_error_rate": 0.3195,
+        "share_accepted": 0.2721,
+        "share_of_all_irc_errors": 0.2942
+      },
+      {
+        "size_bin": ">=96",
+        "crops": 4796,
+        "class_errors": 1774,
+        "irc_errors": 1142,
+        "accepted": 2229,
+        "accepted_irc_errors": 112,
+        "class_error_rate": 0.3699,
+        "irc_error_rate": 0.2381,
+        "share_accepted": 0.4648,
+        "share_of_all_irc_errors": 0.7028
+      }
+    ],
+    "ir": [
+      {
+        "ir_frame": "colour",
+        "crops": 6242,
+        "class_errors": 2324,
+        "irc_errors": 1599,
+        "accepted": 2621,
+        "accepted_irc_errors": 125,
+        "class_error_rate": 0.3723,
+        "irc_error_rate": 0.2562,
+        "share_accepted": 0.4199,
+        "share_of_all_irc_errors": 0.984
+      },
+      {
+        "ir_frame": "IR / greyscale",
+        "crops": 57,
+        "class_errors": 32,
+        "irc_errors": 26,
+        "accepted": 15,
+        "accepted_irc_errors": 1,
+        "class_error_rate": 0.5614,
+        "irc_error_rate": 0.4561,
+        "share_accepted": 0.2632,
+        "share_of_all_irc_errors": 0.016
+      }
+    ],
+    "occlusion_iou": [
+      {
+        "occlusion_bin": "0",
+        "crops": 1686,
+        "class_errors": 510,
+        "irc_errors": 373,
+        "accepted": 795,
+        "accepted_irc_errors": 14,
+        "class_error_rate": 0.3025,
+        "irc_error_rate": 0.2212,
+        "share_accepted": 0.4715,
+        "share_of_all_irc_errors": 0.2295
+      },
+      {
+        "occlusion_bin": "(0, 0.1)",
+        "crops": 2067,
+        "class_errors": 728,
+        "irc_errors": 515,
+        "accepted": 830,
+        "accepted_irc_errors": 32,
+        "class_error_rate": 0.3522,
+        "irc_error_rate": 0.2492,
+        "share_accepted": 0.4015,
+        "share_of_all_irc_errors": 0.3169
+      },
+      {
+        "occlusion_bin": "[0.1, 0.3)",
+        "crops": 1627,
+        "class_errors": 588,
+        "irc_errors": 444,
+        "accepted": 642,
+        "accepted_irc_errors": 42,
+        "class_error_rate": 0.3614,
+        "irc_error_rate": 0.2729,
+        "share_accepted": 0.3946,
+        "share_of_all_irc_errors": 0.2732
+      },
+      {
+        "occlusion_bin": ">=0.3",
+        "crops": 919,
+        "class_errors": 530,
+        "irc_errors": 293,
+        "accepted": 369,
+        "accepted_irc_errors": 38,
+        "class_error_rate": 0.5767,
+        "irc_error_rate": 0.3188,
+        "share_accepted": 0.4015,
+        "share_of_all_irc_errors": 0.1803
+      }
+    ],
+    "frame_edge": [
+      {
+        "at_frame_edge": "inside frame",
+        "crops": 6061,
+        "class_errors": 2225,
+        "irc_errors": 1526,
+        "accepted": 2576,
+        "accepted_irc_errors": 124,
+        "class_error_rate": 0.3671,
+        "irc_error_rate": 0.2518,
+        "share_accepted": 0.425,
+        "share_of_all_irc_errors": 0.9391
+      },
+      {
+        "at_frame_edge": "touches edge",
+        "crops": 238,
+        "class_errors": 131,
+        "irc_errors": 99,
+        "accepted": 60,
+        "accepted_irc_errors": 2,
+        "class_error_rate": 0.5504,
+        "irc_error_rate": 0.416,
+        "share_accepted": 0.2521,
+        "share_of_all_irc_errors": 0.0609
+      }
+    ],
+    "true_class": [
+      {
+        "class": "Hatchback",
+        "crops": 607,
+        "class_errors": 385,
+        "irc_errors": 113,
+        "accepted": 256,
+        "accepted_irc_errors": 14,
+        "class_error_rate": 0.6343,
+        "irc_error_rate": 0.1862,
+        "share_accepted": 0.4217,
+        "share_of_all_irc_errors": 0.0695
+      },
+      {
+        "class": "Sedan",
+        "crops": 356,
+        "class_errors": 258,
+        "irc_errors": 71,
+        "accepted": 176,
+        "accepted_irc_errors": 15,
+        "class_error_rate": 0.7247,
+        "irc_error_rate": 0.1994,
+        "share_accepted": 0.4944,
+        "share_of_all_irc_errors": 0.0437
+      },
+      {
+        "class": "SUV",
+        "crops": 300,
+        "class_errors": 201,
+        "irc_errors": 54,
+        "accepted": 126,
+        "accepted_irc_errors": 5,
+        "class_error_rate": 0.67,
+        "irc_error_rate": 0.18,
+        "share_accepted": 0.42,
+        "share_of_all_irc_errors": 0.0332
+      },
+      {
+        "class": "MUV",
+        "crops": 212,
+        "class_errors": 195,
+        "irc_errors": 64,
+        "accepted": 58,
+        "accepted_irc_errors": 6,
+        "class_error_rate": 0.9198,
+        "irc_error_rate": 0.3019,
+        "share_accepted": 0.2736,
+        "share_of_all_irc_errors": 0.0394
+      },
+      {
+        "class": "Bus",
+        "crops": 147,
+        "class_errors": 101,
+        "irc_errors": 50,
+        "accepted": 26,
+        "accepted_irc_errors": 4,
+        "class_error_rate": 0.6871,
+        "irc_error_rate": 0.3401,
+        "share_accepted": 0.1769,
+        "share_of_all_irc_errors": 0.0308
+      },
+      {
+        "class": "Truck",
+        "crops": 339,
+        "class_errors": 280,
+        "irc_errors": 265,
+        "accepted": 29,
+        "accepted_irc_errors": 27,
+        "class_error_rate": 0.826,
+        "irc_error_rate": 0.7817,
+        "share_accepted": 0.0855,
+        "share_of_all_irc_errors": 0.1631
+      },
+      {
+        "class": "Three-wheeler",
+        "crops": 937,
+        "class_errors": 262,
+        "irc_errors": 289,
+        "accepted": 418,
+        "accepted_irc_errors": 11,
+        "class_error_rate": 0.2796,
+        "irc_error_rate": 0.3084,
+        "share_accepted": 0.4461,
+        "share_of_all_irc_errors": 0.1778
+      },
+      {
+        "class": "Two-wheeler",
+        "crops": 2816,
+        "class_errors": 306,
+        "irc_errors": 378,
+        "accepted": 1508,
+        "accepted_irc_errors": 14,
+        "class_error_rate": 0.1087,
+        "irc_error_rate": 0.1342,
+        "share_accepted": 0.5355,
+        "share_of_all_irc_errors": 0.2326
+      },
+      {
+        "class": "LCV",
+        "crops": 372,
+        "class_errors": 220,
+        "irc_errors": 220,
+        "accepted": 16,
+        "accepted_irc_errors": 15,
+        "class_error_rate": 0.5914,
+        "irc_error_rate": 0.5914,
+        "share_accepted": 0.043,
+        "share_of_all_irc_errors": 0.1354
+      },
+      {
+        "class": "Mini-bus",
+        "crops": 25,
+        "class_errors": 18,
+        "irc_errors": 10,
+        "accepted": 2,
+        "accepted_irc_errors": 1,
+        "class_error_rate": 0.72,
+        "irc_error_rate": 0.4,
+        "share_accepted": 0.08,
+        "share_of_all_irc_errors": 0.0062
+      },
+      {
+        "class": "Tempo-traveller",
+        "crops": 28,
+        "class_errors": 26,
+        "irc_errors": 23,
+        "accepted": 0,
+        "accepted_irc_errors": 0,
+        "class_error_rate": 0.9286,
+        "irc_error_rate": 0.8214,
+        "share_accepted": 0.0,
+        "share_of_all_irc_errors": 0.0142
+      },
+      {
+        "class": "Bicycle",
+        "crops": 95,
+        "class_errors": 66,
+        "irc_errors": 66,
+        "accepted": 14,
+        "accepted_irc_errors": 11,
+        "class_error_rate": 0.6947,
+        "irc_error_rate": 0.6947,
+        "share_accepted": 0.1474,
+        "share_of_all_irc_errors": 0.0406
+      },
+      {
+        "class": "Van",
+        "crops": 62,
+        "class_errors": 37,
+        "irc_errors": 21,
+        "accepted": 5,
+        "accepted_irc_errors": 3,
+        "class_error_rate": 0.5968,
+        "irc_error_rate": 0.3387,
+        "share_accepted": 0.0806,
+        "share_of_all_irc_errors": 0.0129
+      },
+      {
+        "class": "Others",
+        "crops": 3,
+        "class_errors": 1,
+        "irc_errors": 1,
+        "accepted": 2,
+        "accepted_irc_errors": 0,
+        "class_error_rate": 0.3333,
+        "irc_error_rate": 0.3333,
+        "share_accepted": 0.6667,
+        "share_of_all_irc_errors": 0.0006
+      }
+    ]
+  }
+}

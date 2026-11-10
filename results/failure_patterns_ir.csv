@@ -1,0 +1,3 @@
+ir_frame,crops,class_errors,irc_errors,accepted,accepted_irc_errors,class_error_rate,irc_error_rate,share_accepted,share_of_all_irc_errors
+colour,6242,2324,1599,2621,125,0.3723,0.2562,0.4199,0.984
+IR / greyscale,57,32,26,15,1,0.5614,0.4561,0.2632,0.016
