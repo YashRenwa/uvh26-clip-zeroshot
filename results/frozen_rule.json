@@ -1,0 +1,43 @@
+{
+  "score": "IRC score = summed softmax over the IRC category's classes; accept a crop if IRC score >= threshold, else send to human review",
+  "headline_arm": "ensemble",
+  "rules": {
+    "ensemble": {
+      "arm": "ensemble",
+      "role": "headline",
+      "prompt_file": "prompts/ensemble.yaml",
+      "prompt_sha256": "84219edffad0223da81fd2bcb79708f01584fa5ccf17582bb5165ce022b544a9",
+      "target_irc_accuracy": 0.95,
+      "threshold": 0.8956350988433569,
+      "val": {
+        "coverage": 0.4075414781297134,
+        "accepted_irc_accuracy": 0.9500370096225018,
+        "accepted_class_accuracy": 0.8267949666913398,
+        "human_workload": 0.5924585218702866,
+        "pcu_mae_no_review": 2.0776225663716814,
+        "pcu_mae_after_review": 0.2701539823008849
+      },
+      "note": "Accepted crops are 95% correct at IRC level but 82.7% at 14-class level on val; the rule targets IRC (PCU), not the class."
+    },
+    "baseline": {
+      "arm": "baseline",
+      "role": "secondary",
+      "prompt_file": "prompts/baseline.yaml",
+      "prompt_sha256": "2e69fdead32879056fbb4607b06c8215f537a0ebaf0dfe9bdb539c908a3a6c54",
+      "target_irc_accuracy": 0.95,
+      "threshold": 0.8545581998828602,
+      "val": {
+        "coverage": 0.11493212669683257,
+        "accepted_irc_accuracy": 0.9501312335958005,
+        "accepted_class_accuracy": 0.9396325459317585,
+        "human_workload": 0.8850678733031674,
+        "pcu_mae_no_review": 4.81410221238938,
+        "pcu_mae_after_review": 0.08246393805309729
+      },
+      "note": "Fragile: the baseline's val IRC coverage curve hovers around 95% between 0-15% coverage, so t is wherever it last crosses the target and could move a lot with small data changes."
+    }
+  },
+  "decided_by": "Yash (G2)",
+  "frozen_at": "2026-11-10 22:03 IST",
+  "test_policy": "Both arms' rules are reported on test with nothing chosen after the fact; prompts and thresholds are not changed after test is opened."
+}
