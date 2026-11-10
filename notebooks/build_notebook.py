@@ -15,12 +15,12 @@ OUT = Path(__file__).with_name("uvh26_clip_zeroshot.ipynb")
 CELLS: list[tuple[str, str]] = []
 
 
-def md(s: str) -> None:
-    CELLS.append(("md", s.strip("\n")))
+def md(s: str, cell_id: str | None = None) -> None:
+    CELLS.append(("md", s.strip("\n"), cell_id))
 
 
 def code(s: str) -> None:
-    CELLS.append(("code", s.strip("\n")))
+    CELLS.append(("code", s.strip("\n"), None))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ produces images, not counts; synthetic traffic would not tell a planner anything
 **Scope.** Boxes are the dataset's ground-truth boxes (UVH-26-ST), so this measures classification only.
 Assignment 1's fine-tuned YOLOv8 on the same split is quoted once, as what labelled training bought; its
 numbers include detection errors, ours do not.
-""")
+""", cell_id="yash-step1")
 
 # --------------------------------------------------------------------------------------------------
 md("""
@@ -202,8 +202,11 @@ very likely are, which is what zero-shot relies on. Within the project, the prom
 threshold were chosen on val only; about 10% of test images share a camera with a val image (by-eye
 audit above), and the prompts were written from the dataset's class definitions and revised at most
 twice, so the effect of that overlap on the test numbers is small.
+""", cell_id="yash-contamination")
 
-Example crops per class (val), faces blurred:
+md("""
+Example crops per class (val), one seeded random crop each, faces blurred. The Bicycle example is a car
+carrying a duplicate STAPLE box labelled Bicycle; see the label-noise finding in Step 7.
 """)
 
 code("""
@@ -494,7 +497,11 @@ def build() -> None:
     nb = nbf.v4.new_notebook()
     nb.metadata = {"kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
                    "language_info": {"name": "python"}}
-    nb.cells = [nbf.v4.new_markdown_cell(s) if kind == "md" else nbf.v4.new_code_cell(s) for kind, s in CELLS]
+    nb.cells = []
+    for i, (kind, s, cell_id) in enumerate(CELLS):
+        c = nbf.v4.new_markdown_cell(s) if kind == "md" else nbf.v4.new_code_cell(s)
+        c["id"] = cell_id or f"c{i:02d}-{kind}"    # fixed ids: notebooks/replace_markdown.py edits by id
+        nb.cells.append(c)
     OUT.write_text(nbf.writes(nb))
     print(f"wrote {OUT} ({len(CELLS)} cells)")
 

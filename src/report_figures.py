@@ -76,14 +76,20 @@ def redaction_checklist(cfg: dict[str, Any], in_report: list[str]) -> pd.DataFra
     files = in_report + ["results/figures/val_examples.png"] + \
         sorted(str(p.relative_to(ROOT)) for p in (ROOT / "results" / "failures").glob("*.png")) + \
         sorted(str(p.relative_to(ROOT)) for p in (ROOT / "results" / "leak_test_val").glob("*.jpg"))
+    path = ROOT / "results" / "redaction_checklist.csv"
+    prior = pd.read_csv(path, dtype=str, keep_default_na=False).set_index("file") if path.exists() else None
     rows = []
     for f in dict.fromkeys(files):
         img = cv2.cvtColor(cv2.imread(str(ROOT / f)), cv2.COLOR_BGR2RGB)
         rows.append({"file": f, "in_report": f in in_report or f == "results/figures/val_examples.png",
                      "shows_pixels": True, "faces_still_detected_after_redaction": face_count(img),
                      "checked_by_yash": "", "plates_or_faces_to_add_to_redact_csv": ""})
+        # keep an earlier by-eye check if the figure still shows the same number of detections
+        if prior is not None and f in prior.index and int(prior.loc[f, "faces_still_detected_after_redaction"]) == rows[-1]["faces_still_detected_after_redaction"]:
+            for k in ("checked_by_yash", "plates_or_faces_to_add_to_redact_csv"):
+                rows[-1][k] = prior.loc[f, k]
     df = pd.DataFrame(rows)
-    df.to_csv(ROOT / "results" / "redaction_checklist.csv", index=False)
+    df.to_csv(path, index=False)
     return df
 
 
