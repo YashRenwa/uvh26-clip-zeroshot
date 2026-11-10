@@ -1,0 +1,95 @@
+{
+  "status": "SECONDARY label-quality check, defined after test was opened; headline unchanged",
+  "definition": "same-image ST boxes linked by IoU >= 0.99 with different classes",
+  "splits": {
+    "val": {
+      "crops": 6630,
+      "crops_in_groups": 679,
+      "share": 0.1024,
+      "groups": 334,
+      "images_with_groups": 207,
+      "group_size_distribution": {
+        "2": 323,
+        "3": 11
+      }
+    },
+    "test": {
+      "crops": 6299,
+      "crops_in_groups": 568,
+      "share": 0.0902,
+      "groups": 279,
+      "images_with_groups": 192,
+      "group_size_distribution": {
+        "2": 269,
+        "3": 10
+      }
+    }
+  },
+  "test": {
+    "baseline": {
+      "all_crops_headline": {
+        "accuracy": 0.45546912208287027,
+        "macro_f1_headline": 0.22962534762296577,
+        "irc_accuracy": 0.5753294173678362,
+        "pcu_mae": 4.767839832285114,
+        "accepted_irc_accuracy": 0.9431009957325747
+      },
+      "a_excluding_duplicate_groups": {
+        "crops": 5731,
+        "images": 477,
+        "accuracy": 0.4901413365904729,
+        "macro_f1_headline": 0.2365014216357026,
+        "irc_accuracy": 0.5847147094747862,
+        "pcu": {
+          "pcu_mae": 3.978950524109014,
+          "pcu_bias": 3.3675735849056596,
+          "pcu_rel_mae": 0.2673195581848394,
+          "mean_true_pcu": 14.884621802935008,
+          "images": 477
+        },
+        "rule": {
+          "threshold": 0.8545581998828602,
+          "coverage": 0.12057232594660618,
+          "accepted_irc_accuracy": 0.9479015918958031
+        }
+      },
+      "b_lenient_all_crops": {
+        "accuracy": 0.4651531989204636,
+        "irc_accuracy": 0.5823146531195428
+      }
+    },
+    "ensemble": {
+      "all_crops_headline": {
+        "accuracy": 0.6259723765677092,
+        "macro_f1_headline": 0.3961246814925119,
+        "irc_accuracy": 0.742022543260835,
+        "pcu_mae": 1.9763442348008387,
+        "accepted_irc_accuracy": 0.9522003034901366
+      },
+      "a_excluding_duplicate_groups": {
+        "crops": 5731,
+        "images": 477,
+        "accuracy": 0.6646309544582097,
+        "macro_f1_headline": 0.41429635008798393,
+        "irc_accuracy": 0.7530971907171523,
+        "pcu": {
+          "pcu_mae": 1.8187710691823897,
+          "pcu_bias": 0.7875266247379454,
+          "pcu_rel_mae": 0.12219128529176047,
+          "mean_true_pcu": 14.884621802935008,
+          "images": 477
+        },
+        "rule": {
+          "threshold": 0.8956350988433569,
+          "coverage": 0.4264526260687489,
+          "accepted_irc_accuracy": 0.9586743044189853
+        }
+      },
+      "b_lenient_all_crops": {
+        "accuracy": 0.6477218606127957,
+        "irc_accuracy": 0.7507540879504683
+      }
+    }
+  },
+  "note_a1": "A1's labels (same ST JSONs, same dedup rule) carry the same duplicates."
+}

@@ -37,6 +37,8 @@ crops:
   context: 1.1                # square side = context x max(w, h), centred on the box
   size_bins: [32, 96]         # long side px: <32, 32-95, >=96
   ir_threshold: 2.0           # frame is near-greyscale if mean |R-G| + |G-B| < this
+  edge_tol_px: 3              # box 'touches the frame edge' if within this many px of a frame bound
+                              # (annotators stop 0.1-2 px short of the edge; corrected 2026-11-10)
 
 smoke_images: 20              # val images used by --smoke
 

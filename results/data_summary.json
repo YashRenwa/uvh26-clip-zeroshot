@@ -27,7 +27,7 @@
       "<32": 17
     },
     "ir_crops": 30,
-    "truncated_crops": 269,
+    "truncated_crops": 1074,
     "occluded_iou_ge_0_3": 1057,
     "low_support_classes": [
       "Mini-bus",
@@ -50,7 +50,7 @@
       "<32": 7
     },
     "ir_crops": 57,
-    "truncated_crops": 238,
+    "truncated_crops": 1013,
     "occluded_iou_ge_0_3": 919,
     "low_support_classes": [
       "Mini-bus",
@@ -97,5 +97,19 @@
     "val": {},
     "test": {}
   },
-  "example_figure": "/Users/yashrenwa/Personal/Projects/uvh26-clip-zeroshot/results/figures/val_examples.png"
+  "example_figure": "/Users/yashrenwa/Personal/Projects/uvh26-clip-zeroshot/results/figures/val_examples.png",
+  "edge_rule": {
+    "tol_px": 3,
+    "corrected": "2026-11-10",
+    "counts": {
+      "val": {
+        "before": 269,
+        "after": 1074
+      },
+      "test": {
+        "before": 238,
+        "after": 1013
+      }
+    }
+  }
 }

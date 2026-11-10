@@ -68,6 +68,28 @@ def max_iou_with_others(boxes: np.ndarray) -> np.ndarray:
     return iou.max(axis=1)
 
 
+def edge_flag(m: pd.DataFrame, tol: float) -> pd.Series:
+    """Box touches the frame edge (left, top, right, bottom or a corner) within `tol` px.
+
+    Corrected 2026-11-10: the first rule tested exact equality, but ST boxes stop 0.1-2 px short of the
+    frame bound (e.g. y2 = 1079.89 in a 1080-px frame), so bottom and corner cuts were missed.
+    """
+    return (m["x1"] <= tol) | (m["y1"] <= tol) | (m["x2"] >= m["img_w"] - tol) | (m["y2"] >= m["img_h"] - tol)
+
+
+def retag_edges(cfg: dict[str, Any]) -> dict[str, int]:
+    """Recompute only the `truncated` column of the saved manifests (no frames are read)."""
+    out = {}
+    for split in ("val", "test"):
+        path = ROOT / "results" / f"crops_{split}.csv"
+        m = pd.read_csv(path, dtype={"stem": str, "group": str})
+        before = int(m["truncated"].sum())
+        m["truncated"] = edge_flag(m, cfg["crops"]["edge_tol_px"])
+        m.to_csv(path, index=False)
+        out[split] = {"before": before, "after": int(m["truncated"].sum())}
+    return out
+
+
 def frame_tags(frame: np.ndarray) -> tuple[float, float]:
     """(colourfulness = mean |R-G| + |G-B|, brightness = mean grey level 0-255)."""
     f = frame.astype(np.int16)
@@ -106,7 +128,7 @@ def build_manifest(cfg: dict[str, Any], split: str, stems: list[str]) -> tuple[p
     m["brightness"] = m["stem"].map(lambda s: ft[s][1])
     win = [square_window(*b, cfg["crops"]["context"]) for b in m[["x1", "y1", "x2", "y2"]].to_numpy()]
     m["crop_left"], m["crop_top"], m["crop_side"] = zip(*win)
-    m["truncated"] = (m["x1"] <= 0) | (m["y1"] <= 0) | (m["x2"] >= m["img_w"]) | (m["y2"] >= m["img_h"])
+    m["truncated"] = edge_flag(m, cfg["crops"]["edge_tol_px"])
     m = m.drop(columns=["box_idx"])
     summary.update(ir_images=int(sum(c < cfg["crops"]["ir_threshold"] for c, _ in ft.values())))
     return m.round(3), summary
@@ -164,9 +186,19 @@ def a1_reference() -> dict[str, dict[str, int]] | None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     add_common_args(ap)
+    ap.add_argument("--retag-edges", action="store_true", help="only recompute the frame-edge flag")
     args = ap.parse_args()
     cfg = load_config(args.config, smoke=args.smoke)
     set_seed(cfg["seed"])
+    if args.retag_edges:
+        out = retag_edges(cfg)
+        summary = json.loads((ROOT / "results" / "data_summary.json").read_text())
+        for split, v in out.items():
+            summary[split]["truncated_crops"] = v["after"]
+        summary["edge_rule"] = {"tol_px": cfg["crops"]["edge_tol_px"], "corrected": "2026-11-10", "counts": out}
+        write_result("data_summary", summary, cfg)
+        print(out)
+        return
     res = cfg["paths"]["results_dir"]
     classes = cfg["dataset"]["classes"]
 

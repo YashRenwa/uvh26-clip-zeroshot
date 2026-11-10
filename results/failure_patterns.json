@@ -27,17 +27,17 @@
       "ir_night": 0,
       "lookalike": 0,
       "occlusion": 3,
-      "other": 6,
+      "other": 5,
       "small": 1,
-      "truncated": 0
+      "truncated": 1
     },
     "random": {
       "ir_night": 1,
-      "lookalike": 5,
-      "occlusion": 5,
-      "other": 10,
+      "lookalike": 4,
+      "occlusion": 3,
+      "other": 7,
       "small": 6,
-      "truncated": 3
+      "truncated": 9
     }
   },
   "sheets": [
@@ -165,27 +165,27 @@
     "frame_edge": [
       {
         "at_frame_edge": "inside frame",
-        "crops": 6061,
-        "class_errors": 2225,
-        "irc_errors": 1526,
-        "accepted": 2576,
-        "accepted_irc_errors": 124,
-        "class_error_rate": 0.3671,
-        "irc_error_rate": 0.2518,
-        "share_accepted": 0.425,
-        "share_of_all_irc_errors": 0.9391
+        "crops": 5286,
+        "class_errors": 1851,
+        "irc_errors": 1258,
+        "accepted": 2326,
+        "accepted_irc_errors": 105,
+        "class_error_rate": 0.3502,
+        "irc_error_rate": 0.238,
+        "share_accepted": 0.44,
+        "share_of_all_irc_errors": 0.7742
       },
       {
         "at_frame_edge": "touches edge",
-        "crops": 238,
-        "class_errors": 131,
-        "irc_errors": 99,
-        "accepted": 60,
-        "accepted_irc_errors": 2,
-        "class_error_rate": 0.5504,
-        "irc_error_rate": 0.416,
-        "share_accepted": 0.2521,
-        "share_of_all_irc_errors": 0.0609
+        "crops": 1013,
+        "class_errors": 505,
+        "irc_errors": 367,
+        "accepted": 310,
+        "accepted_irc_errors": 21,
+        "class_error_rate": 0.4985,
+        "irc_error_rate": 0.3623,
+        "share_accepted": 0.306,
+        "share_of_all_irc_errors": 0.2258
       }
     ],
     "true_class": [

@@ -1,41 +1,41 @@
 set,rank,crop_id,stem,true,pred,score,irc_true,irc_pred,irc_score,size_bin,long_side,ir,max_iou,truncated,suggested_cause_NOT_A_TAG,cause,note
-random,1,643765_000,643765,Truck,Others,0.49876,truck_bus,tractor,0.49876,>=96,549.1,False,0.0,True,truncated,,
-random,2,439975_001,439975,Bus,Three-wheeler,0.3148,truck_bus,truck_bus,0.47549,>=96,580.0,False,0.099,True,truncated,,
-random,3,202304_005,202304,LCV,Three-wheeler,0.74346,lcv,auto,0.74346,>=96,747.0,False,0.515,False,occlusion,,
-random,4,839055_006,839055,Three-wheeler,Others,0.26268,auto,truck_bus,0.27859,>=96,278.0,False,0.0,False,other,,
-random,5,458356_002,458356,Van,Three-wheeler,0.34793,car,auto,0.34793,>=96,322.0,False,0.14,False,other,,
-random,6,938797_005,938797,Hatchback,Two-wheeler,0.16343,car,car,0.40333,>=96,200.0,False,0.177,True,truncated,,
-random,7,75165_022,75165,Bicycle,Two-wheeler,0.47333,cycle,two_wheeler,0.47333,32-95,52.0,False,0.0,False,small,,
-random,8,92618_006,92618,Three-wheeler,Others,0.73203,auto,tractor,0.73203,32-95,69.0,False,0.0,False,small,,
-random,9,424284_008,424284,MUV,Hatchback,0.37228,car,car,0.7537,>=96,269.0,False,1.0,False,occlusion,,
-random,10,871881_002,871881,Truck,LCV,0.58087,truck_bus,lcv,0.58095,>=96,395.0,False,0.0,False,lookalike,,
-random,11,353174_008,353174,Hatchback,Three-wheeler,0.60602,car,auto,0.60602,>=96,466.0,False,1.0,False,occlusion,,
-random,12,951447_011,951447,Two-wheeler,Others,0.86257,two_wheeler,tractor,0.86257,32-95,73.0,False,0.297,False,small,,
-random,13,739881_009,739881,Truck,LCV,0.35087,truck_bus,truck_bus,0.3967,>=96,435.0,False,0.297,False,lookalike,,
-random,14,400332_011,400332,Sedan,Two-wheeler,0.40263,car,two_wheeler,0.40263,>=96,227.0,False,0.052,False,other,,
-random,15,217500_025,217500,Two-wheeler,Three-wheeler,0.57802,two_wheeler,auto,0.57802,>=96,265.0,False,0.103,False,other,,
-random,16,424284_004,424284,MUV,Hatchback,0.59542,car,car,0.93148,>=96,311.0,False,0.148,False,lookalike,,
-random,17,558051_004,558051,LCV,Two-wheeler,0.53559,lcv,two_wheeler,0.53559,>=96,325.0,False,0.035,False,other,,
-random,18,847251_025,847251,Truck,MUV,0.18328,truck_bus,car,0.43034,>=96,105.0,False,0.046,False,other,,
-random,19,785597_009,785597,SUV,MUV,0.17624,car,car,0.71548,32-95,76.0,False,0.0,False,small,,
-random,20,928769_013,928769,Van,LCV,0.24214,car,car,0.63742,>=96,169.0,False,0.284,False,other,,
-random,21,275964_028,275964,Bicycle,Hatchback,0.21177,cycle,car,0.67281,32-95,94.0,False,1.0,False,small,,
-random,22,631384_007,631384,Hatchback,SUV,0.41505,car,car,0.93686,32-95,86.0,False,0.0,False,small,,
-random,23,923370_032,923370,Truck,LCV,0.31366,truck_bus,lcv,0.3188,>=96,190.0,False,0.024,False,lookalike,,
-random,24,629625_003,629625,Two-wheeler,SUV,0.25673,two_wheeler,car,0.55569,>=96,99.0,False,0.02,False,other,,
-random,25,854942_001,854942,Hatchback,Van,0.42071,car,car,0.73952,>=96,193.0,False,0.296,False,lookalike,,
-random,26,126594_022,126594,MUV,Two-wheeler,0.85373,car,two_wheeler,0.85373,>=96,438.0,False,1.0,False,occlusion,,
-random,27,757249_026,757249,Truck,Three-wheeler,0.72104,truck_bus,auto,0.72104,>=96,405.0,False,1.0,False,occlusion,,
-random,28,895353_010,895353,Truck,Others,0.21611,truck_bus,car,0.3731,>=96,394.0,False,0.0,False,other,,
-random,29,982844_002,982844,Truck,Mini-bus,0.30681,truck_bus,truck_bus,0.57155,>=96,268.0,True,0.0,False,ir_night,,
-random,30,102998_003,102998,Three-wheeler,MUV,0.23737,auto,car,0.43421,>=96,106.0,False,0.193,False,other,,
-confident,1,943532_015,943532,Truck,Sedan,0.4577,truck_bus,car,0.97645,>=96,123.0,False,0.111,False,other,,
-confident,2,847251_027,847251,Two-wheeler,Three-wheeler,0.96151,two_wheeler,auto,0.96151,>=96,186.0,False,0.061,False,other,,
-confident,3,549996_018,549996,Three-wheeler,Others,0.91531,auto,tractor,0.91531,32-95,89.0,False,0.0,False,small,,
-confident,4,721290_013,721290,Two-wheeler,SUV,0.38492,two_wheeler,car,0.94211,>=96,274.0,False,0.117,False,other,,
-confident,5,102277_009,102277,Mini-bus,Three-wheeler,0.92976,truck_bus,auto,0.92976,>=96,312.0,False,0.224,False,other,,
-confident,6,255898_007,255898,Truck,Hatchback,0.36767,truck_bus,car,0.9772,>=96,226.0,False,1.0,False,occlusion,,
-confident,7,785597_016,785597,Bicycle,Sedan,0.3217,cycle,car,0.9391,>=96,155.0,False,1.0,False,occlusion,,
-confident,8,692306_010,692306,Three-wheeler,Two-wheeler,0.94248,auto,two_wheeler,0.94248,>=96,328.0,False,0.034,False,other,,
-confident,9,126594_025,126594,LCV,Others,0.95518,lcv,tractor,0.95518,>=96,315.0,False,1.0,False,occlusion,,
-confident,10,607231_023,607231,Bicycle,Three-wheeler,0.99458,cycle,auto,0.99458,>=96,135.0,False,0.236,False,other,,
+random,1,643765_000,643765,Truck,Others,0.49876,truck_bus,tractor,0.49876,>=96,549.1,False,0.0,True,truncated,truncated,bus/truck front cut off at the frame edge [judged by Claude]
+random,2,439975_001,439975,Bus,Three-wheeler,0.3148,truck_bus,truck_bus,0.47549,>=96,580.0,False,0.099,True,truncated,context,bus clearly visible; autos in the padded crop; IRC still correct [judged by Claude]
+random,3,202304_005,202304,LCV,Three-wheeler,0.74346,lcv,auto,0.74346,>=96,747.0,False,0.515,False,occlusion,occlusion,LCV behind an auto-rickshaw that fills the crop [judged by Claude]
+random,4,839055_006,839055,Three-wheeler,Others,0.26268,auto,truck_bus,0.27859,>=96,278.0,False,0.0,False,other,truncated,only an auto roof corner at the frame corner; edge flag missed it [judged by Claude]
+random,5,458356_002,458356,Van,Three-wheeler,0.34793,car,auto,0.34793,>=96,322.0,False,0.14,False,other,other,clear white Omni-style van; CLIP has no good concept for it [judged by Claude]
+random,6,938797_005,938797,Hatchback,Two-wheeler,0.16343,car,car,0.40333,>=96,200.0,False,0.177,True,truncated,ir_night,night haze; only headlights visible [judged by Claude]
+random,7,75165_022,75165,Bicycle,Two-wheeler,0.47333,cycle,two_wheeler,0.47333,32-95,52.0,False,0.0,False,small,small,52 px cyclist; looks like a two-wheeler at this size [judged by Claude]
+random,8,92618_006,92618,Three-wheeler,Others,0.73203,auto,tractor,0.73203,32-95,69.0,False,0.0,False,small,small,"69 px auto, partly behind a pole [judged by Claude]"
+random,9,424284_008,424284,MUV,Hatchback,0.37228,car,car,0.7537,>=96,269.0,False,1.0,False,occlusion,label,"STAPLE double box: same box also labelled Hatchback, which is the prediction [judged by Claude]"
+random,10,871881_002,871881,Truck,LCV,0.58087,truck_bus,lcv,0.58095,>=96,395.0,False,0.0,False,lookalike,lookalike,clear container truck read as LCV [judged by Claude]
+random,11,353174_008,353174,Hatchback,Three-wheeler,0.60602,car,auto,0.60602,>=96,466.0,False,1.0,False,occlusion,context,auto beside the car in the crop; box also has a duplicate labelled Bicycle [judged by Claude]
+random,12,951447_011,951447,Two-wheeler,Others,0.86257,two_wheeler,tractor,0.86257,32-95,73.0,False,0.297,False,small,small,73 px motion-blurred rider [judged by Claude]
+random,13,739881_009,739881,Truck,LCV,0.35087,truck_bus,truck_bus,0.3967,>=96,435.0,False,0.297,False,lookalike,lookalike,mid-size truck read as LCV; IRC correct [judged by Claude]
+random,14,400332_011,400332,Sedan,Two-wheeler,0.40263,car,two_wheeler,0.40263,>=96,227.0,False,0.052,False,other,occlusion,car partly hidden by a goods rack [judged by Claude]
+random,15,217500_025,217500,Two-wheeler,Three-wheeler,0.57802,two_wheeler,auto,0.57802,>=96,265.0,False,0.103,False,other,context,auto fills most of the crop; rider small [judged by Claude]
+random,16,424284_004,424284,MUV,Hatchback,0.59542,car,car,0.93148,>=96,311.0,False,0.148,False,lookalike,lookalike,car subtype (MUV vs hatchback); IRC correct [judged by Claude]
+random,17,558051_004,558051,LCV,Two-wheeler,0.53559,lcv,two_wheeler,0.53559,>=96,325.0,False,0.035,False,other,context,scooter rider in the foreground of the crop [judged by Claude]
+random,18,847251_025,847251,Truck,MUV,0.18328,truck_bus,car,0.43034,>=96,105.0,False,0.046,False,other,small,"distant, blurry and partly hidden [judged by Claude]"
+random,19,785597_009,785597,SUV,MUV,0.17624,car,car,0.71548,32-95,76.0,False,0.0,False,small,small,76 px car subtype; IRC correct [judged by Claude]
+random,20,928769_013,928769,Van,LCV,0.24214,car,car,0.63742,>=96,169.0,False,0.284,False,other,occlusion,van front hidden by a black car; IRC correct [judged by Claude]
+random,21,275964_028,275964,Bicycle,Hatchback,0.21177,cycle,car,0.67281,32-95,94.0,False,1.0,False,small,label,box is on a car but labelled Bicycle; duplicate box labelled SUV [judged by Claude]
+random,22,631384_007,631384,Hatchback,SUV,0.41505,car,car,0.93686,32-95,86.0,False,0.0,False,small,small,86 px car subtype; IRC correct [judged by Claude]
+random,23,923370_032,923370,Truck,LCV,0.31366,truck_bus,lcv,0.3188,>=96,190.0,False,0.024,False,lookalike,lookalike,tipper truck read as LCV [judged by Claude]
+random,24,629625_003,629625,Two-wheeler,SUV,0.25673,two_wheeler,car,0.55569,>=96,99.0,False,0.02,False,other,occlusion,rider hidden behind a tree [judged by Claude]
+random,25,854942_001,854942,Hatchback,Van,0.42071,car,car,0.73952,>=96,193.0,False,0.296,False,lookalike,lookalike,boxy hatchback read as van; IRC correct [judged by Claude]
+random,26,126594_022,126594,MUV,Two-wheeler,0.85373,car,two_wheeler,0.85373,>=96,438.0,False,1.0,False,occlusion,occlusion,rider in front of the car; duplicate SUV and Hatchback boxes too [judged by Claude]
+random,27,757249_026,757249,Truck,Three-wheeler,0.72104,truck_bus,auto,0.72104,>=96,405.0,False,1.0,False,occlusion,occlusion,packed parked vehicles; duplicate box labelled LCV [judged by Claude]
+random,28,895353_010,895353,Truck,Others,0.21611,truck_bus,car,0.3731,>=96,394.0,False,0.0,False,other,truncated,vehicle cut off at the bottom edge; edge flag missed it [judged by Claude]
+random,29,982844_002,982844,Truck,Mini-bus,0.30681,truck_bus,truck_bus,0.57155,>=96,268.0,True,0.0,False,ir_night,ir_night,"IR frame; truck read as mini-bus, IRC correct [judged by Claude]"
+random,30,102998_003,102998,Three-wheeler,MUV,0.23737,auto,car,0.43421,>=96,106.0,False,0.193,False,other,occlusion,auto hidden behind a truck; crop is mostly truck body [judged by Claude]
+confident,1,943532_015,943532,Truck,Sedan,0.4577,truck_bus,car,0.97645,>=96,123.0,False,0.111,False,other,label,labelled Truck but the crop is a sedan; CLIP is right [judged by Claude]
+confident,2,847251_027,847251,Two-wheeler,Three-wheeler,0.96151,two_wheeler,auto,0.96151,>=96,186.0,False,0.061,False,other,context,auto and a standing man fill the crop [judged by Claude]
+confident,3,549996_018,549996,Three-wheeler,Others,0.91531,auto,tractor,0.91531,32-95,89.0,False,0.0,False,small,small,89 px blurry auto read as tractor [judged by Claude]
+confident,4,721290_013,721290,Two-wheeler,SUV,0.38492,two_wheeler,car,0.94211,>=96,274.0,False,0.117,False,other,context,auto and car fill much of the crop [judged by Claude]
+confident,5,102277_009,102277,Mini-bus,Three-wheeler,0.92976,truck_bus,auto,0.92976,>=96,312.0,False,0.224,False,other,occlusion,auto in front of the mini-bus [judged by Claude]
+confident,6,255898_007,255898,Truck,Hatchback,0.36767,truck_bus,car,0.9772,>=96,226.0,False,1.0,False,occlusion,label,Truck box duplicates an SUV box; crop is an SUV; CLIP is right at IRC level [judged by Claude]
+confident,7,785597_016,785597,Bicycle,Sedan,0.3217,cycle,car,0.9391,>=96,155.0,False,1.0,False,occlusion,label,Bicycle box duplicates MUV and Hatchback boxes; crop is a car [judged by Claude]
+confident,8,692306_010,692306,Three-wheeler,Two-wheeler,0.94248,auto,two_wheeler,0.94248,>=96,328.0,False,0.034,False,other,truncated,auto roof cut off at the bottom edge [judged by Claude]
+confident,9,126594_025,126594,LCV,Others,0.95518,lcv,tractor,0.95518,>=96,315.0,False,1.0,False,occlusion,label,LCV box duplicates a Truck box; crop is a tractor with trailer; CLIP tractor is right [judged by Claude]
+confident,10,607231_023,607231,Bicycle,Three-wheeler,0.99458,cycle,auto,0.99458,>=96,135.0,False,0.236,False,other,label,labelled Bicycle but the crop shows an auto; no cyclist visible [judged by Claude]

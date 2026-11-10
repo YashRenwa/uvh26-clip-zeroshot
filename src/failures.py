@@ -178,9 +178,12 @@ def main() -> None:
     tags["note"] = ""
     tag_path = (ROOT / "analysis" / "failure_tags.csv") if not args.smoke else res / "failure_tags.csv"
     if tag_path.exists() and not args.smoke and pd.read_csv(tag_path)["cause"].notna().any():
-        raise SystemExit(f"{tag_path} already has tags; not overwriting")
-    tag_path.parent.mkdir(parents=True, exist_ok=True)
-    tags.to_csv(tag_path, index=False)
+        kept = pd.read_csv(tag_path, dtype=str)
+        assert kept["crop_id"].tolist() == tags["crop_id"].tolist(), "the seeded draw changed"
+        print(f"{tag_path.name} already has Yash's tags: kept unchanged (same draw)")
+    else:
+        tag_path.parent.mkdir(parents=True, exist_ok=True)
+        tags.to_csv(tag_path, index=False)
 
     tables = patterns(cfg, df, t)
     for name, tab in tables.items():
