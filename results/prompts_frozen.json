@@ -1,0 +1,9 @@
+{
+  "prompts": {
+    "baseline": {
+      "file": "prompts/baseline.yaml",
+      "sha256": "2e69fdead32879056fbb4607b06c8215f537a0ebaf0dfe9bdb539c908a3a6c54",
+      "frozen_at": "2026-11-10 21:27 IST"
+    }
+  }
+}

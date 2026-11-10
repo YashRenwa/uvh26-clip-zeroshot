@@ -1,0 +1,22 @@
+# Baseline text prompts: CLIP's own zero-shot recipe with the dataset's class names.
+# One template x one name per class. Written and frozen before any val crop is scored (Phase 2).
+# Names are the class names lowercased, hyphens kept; acronyms stay upper case; "Others" becomes
+# "other vehicle" for grammar only. The template's article is kept as "a" for every class.
+arm: baseline
+templates:
+  - "a photo of a {}."
+names:
+  Hatchback: [hatchback]
+  Sedan: [sedan]
+  SUV: [SUV]
+  MUV: [MUV]
+  Bus: [bus]
+  Truck: [truck]
+  Three-wheeler: [three-wheeler]
+  Two-wheeler: [two-wheeler]
+  LCV: [LCV]
+  Mini-bus: [mini-bus]
+  Tempo-traveller: [tempo-traveller]
+  Bicycle: [bicycle]
+  Van: [van]
+  Others: [other vehicle]
