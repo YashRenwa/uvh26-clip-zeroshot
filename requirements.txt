@@ -1,0 +1,16 @@
+# Python 3.12. Versions follow Assignment 1 (pinned 2026-10-05) so both projects share one stack.
+# Lines marked colab-skip are preinstalled on Colab; the notebook keeps Colab's builds
+# (CUDA-matched torch, no forced runtime restart) and prints every version instead.
+torch==2.14.1               # colab-skip
+torchvision==0.29.1         # colab-skip
+opencv-python==5.0.0.93     # colab-skip
+numpy==2.5.3                # colab-skip
+pandas==3.0.6               # colab-skip
+matplotlib==3.11.2          # colab-skip
+pyyaml==6.0.3               # colab-skip
+tqdm==4.70.1                # colab-skip
+pillow==13.0.0              # colab-skip (transformers dependency)
+transformers==5.18.0
+huggingface-hub==1.33.0
+jupyter==1.1.1              # colab-skip
+ipykernel==7.4.0            # colab-skip

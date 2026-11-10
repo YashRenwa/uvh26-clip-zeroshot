@@ -1,0 +1,96 @@
+# Single source of truth for every tunable number and path (see CLAUDE.md).
+# Ask before changing a value marked FROZEN.
+
+seed: 42                      # random, numpy and torch
+
+# Relative paths resolve against the repo root. Each can be overridden by the env var on the right.
+paths:
+  raw_root: data/raw          # UVH_RAW_ROOT: Hub downloads. Locally: ../uvh26-pcu-counting/data/raw
+  cache_dir: data/cache       # UVH_CACHE_DIR: gitignored dev cache (never used in the notebook run)
+  splits_dir: splits
+  prompts_dir: prompts
+  results_dir: results        # UVH_RESULTS_DIR
+  analysis_dir: analysis
+  report_dir: report
+
+dataset:
+  repo_id: iisc-aim/UVH-26
+  revision: 59f82c57821e8a54dc40bc1f42e83909dbad0b70   # FROZEN, same as Assignment 1
+  license: CC BY 4.0
+  annotations:                # ST labels only; the A1 split mixes official train and val images
+    train: UVH-26-Train/UVH-26-ST-Train.json
+    val: UVH-26-Val/UVH-26-ST-Val.json
+  # COCO category_id k maps to class index k-1, in this order.
+  classes: [Hatchback, Sedan, SUV, MUV, Bus, Truck, Three-wheeler, Two-wheeler,
+            LCV, Mini-bus, Tempo-traveller, Bicycle, Van, Others]
+  test_sha256: f8181d247d7e034f5810b2bb2a978e2739e5055dbc8b3240877c5caa1f667ff6   # FROZEN
+  low_support_min: 30         # classes with fewer test crops are flagged and left out of headline macro-F1
+
+model:
+  id: openai/clip-vit-base-patch16
+  revision: 57c216476eefef5ab752ec549e440a49ae4ae5f3   # FROZEN: HfApi().model_info sha, 2026-11-10
+  dtype: float32
+  device: cpu                 # UVH_DEVICE: cpu | mps | cuda. The reported run is CPU
+  batch_size: 64
+
+crops:
+  context: 1.1                # square side = context x max(w, h), centred on the box
+  size_bins: [32, 96]         # long side px: <32, 32-95, >=96
+  ir_threshold: 2.0           # frame is near-greyscale if mean |R-G| + |G-B| < this
+
+smoke:
+  n_images: 20                # val images used by --smoke
+
+confidence:
+  n_bins: 15                  # equal-width score bins for reliability diagrams and ECE
+  target_irc_accuracy: 0.95   # default; Yash confirms at G2
+
+bootstrap:
+  n_resamples: 1000           # paired, over pseudo-camera groups
+
+failures:
+  n_random: 30
+  n_confident: 10
+
+# PCU: copied from Assignment 1's configs/base.yaml (IRC:106-1990, Table 1). Factor at [5%, >=10%]
+# share of the traffic stream, linear in between, 5% value below 5%. Shares from A1 train ST labels.
+pcu:
+  factors:
+    two_wheeler: [0.5, 0.75]
+    car: [1.0, 1.0]
+    auto: [1.2, 2.0]
+    lcv: [1.4, 2.0]
+    truck_bus: [2.2, 3.7]
+    tractor: [4.0, 5.0]
+    cycle: [0.4, 0.5]
+  class_map:
+    Hatchback: car
+    Sedan: car
+    SUV: car
+    MUV: car
+    Van: car
+    Bus: truck_bus
+    Truck: truck_bus
+    Mini-bus: truck_bus
+    Tempo-traveller: lcv
+    LCV: lcv
+    Three-wheeler: auto
+    Two-wheeler: two_wheeler
+    Bicycle: cycle
+    Others: tractor
+  # A1 train split, ST labels after dedup (A1 results/split.json class_counts["st/train"]).
+  composition_counts:
+    Hatchback: 3539
+    Sedan: 2159
+    SUV: 1803
+    MUV: 1164
+    Bus: 1051
+    Truck: 2147
+    Three-wheeler: 5840
+    Two-wheeler: 17603
+    LCV: 2217
+    Mini-bus: 138
+    Tempo-traveller: 179
+    Bicycle: 709
+    Van: 270
+    Others: 32

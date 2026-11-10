@@ -1,0 +1,72 @@
+{
+  "test_sha256": "f8181d247d7e034f5810b2bb2a978e2739e5055dbc8b3240877c5caa1f667ff6",
+  "split": {
+    "val_images": 452,
+    "val_groups": 355,
+    "test_images": 477,
+    "test_groups": 410,
+    "groups_shared_val_test": 0,
+    "images_shared_val_test": 0
+  },
+  "split_source": "../uvh26-pcu-counting/splits at commit ef77f21 (Assignment 1)",
+  "run": {
+    "seed": 42,
+    "model": "openai/clip-vit-base-patch16",
+    "model_revision": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+    "dataset": "iisc-aim/UVH-26",
+    "dataset_revision": "59f82c57821e8a54dc40bc1f42e83909dbad0b70",
+    "device": "cpu",
+    "versions": {
+      "python": "3.12.13",
+      "numpy": "2.5.3",
+      "matplotlib": "3.11.2",
+      "torch": "2.14.1",
+      "torchvision": "0.29.1",
+      "opencv-python": "5.0.0.93",
+      "transformers": "5.18.0",
+      "huggingface-hub": "1.33.0",
+      "pandas": "3.0.6",
+      "pyyaml": "6.0.3",
+      "tqdm": "4.70.1",
+      "pillow": "13.0.0"
+    }
+  },
+  "hub": {
+    "model_sha": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+    "model_last_modified": "2022-10-04 09:42:28+00:00",
+    "dataset_sha": "59f82c57821e8a54dc40bc1f42e83909dbad0b70",
+    "dataset_last_modified": "2025-12-10 09:33:48+00:00",
+    "dataset_license_tag": "cc-by-4.0"
+  },
+  "contamination": {
+    "uvh26": {
+      "title": "The Urban Vision Hackathon Dataset and Models: Towards Image Annotations and Accurate Vision Models for Indian Traffic",
+      "arxiv": "2511.02563",
+      "first_public": "2025-11-04 (arXiv v1)",
+      "frames_captured": "February 2025, a 25-day period, 06:00-18:00 IST",
+      "evidence": "\"a 25-day period in February, 2025\" (section 2.1)",
+      "source": [
+        "https://arxiv.org/abs/2511.02563",
+        "https://arxiv.org/html/2511.02563"
+      ],
+      "cameras": "about 2,800 Bengaluru Safe-City CCTV cameras",
+      "license": "CC BY 4.0 (dataset)"
+    },
+    "clip": {
+      "model": "openai/clip-vit-base-patch16",
+      "title": "Learning Transferable Visual Models From Natural Language Supervision",
+      "arxiv": "2103.00020",
+      "model_date": "January 2021 (model card); paper v1 2021-02-26",
+      "training_data": "WIT (WebImageText), 400M image-text pairs collected from the internet",
+      "source": [
+        "https://arxiv.org/abs/2103.00020",
+        "https://arxiv.org/html/2103.00020v1",
+        "https://huggingface.co/openai/clip-vit-base-patch16"
+      ]
+    },
+    "conclusion": "UVH-26 frames were captured in February 2025, four years after CLIP's training data was collected (model dated January 2021), so no test frame can be in CLIP's training set.",
+    "caveat": "The concepts (auto-rickshaws, Indian buses, CCTV-style images) were certainly in CLIP's web data, so this tests transfer to a new camera domain, not unseen classes.",
+    "own_leakage": "Prompts and the review threshold are chosen on val cameras only. Test pseudo-cameras are disjoint from val by construction; residual same-camera leakage from Assignment 1's audit is 17.5% (95% CI 8.7-32%, 40 random test images vs their most similar train image). The audit measured test vs train; nothing is trained here, so it bounds val-to-test camera overlap only loosely.",
+    "a1_clip_use": "Assignment 1 used CLIP ViT-B/32 embeddings only to compare grouping rules; the frozen split used 64x36 gradient-magnitude correlation, so no CLIP signal shaped the test set."
+  }
+}
