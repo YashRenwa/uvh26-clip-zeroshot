@@ -1,0 +1,45 @@
+# Prompt ensemble, version 1 (draft, not frozen).
+# Written from the UVH-26 class definitions: dataset card README.md at revision 59f82c5, section
+# "Vehicle Classes" (table rows 1-14); same wording as the paper's class table (arXiv 2511.02563).
+# DISCLOSURE: the baseline's val confusion matrix was already known when v1 was written.
+# Class embedding = mean of the L2-normalised text embeddings over names x templates, re-normalised.
+# Templates leave the article to the names ("an auto-rickshaw", not "a auto-rickshaw").
+arm: ensemble
+version: v1
+templates:
+  - "a photo of {}."
+  - "a CCTV image of {}."
+  - "a top-down traffic camera view of {}."
+  - "a low-resolution photo of {}."
+  - "a blurry photo of {}."
+  - "a traffic camera photo of {} on an Indian road."
+names:
+  # card row 1: small passenger cars without a protruding rear boot
+  Hatchback: ["a hatchback car", "a small hatchback car without a boot"]
+  # card row 2: passenger cars, low-slung, separate protruding rear boot
+  Sedan: ["a sedan car", "a low sedan car with a separate rear boot"]
+  # card row 3: car-like, high ground clearance, sturdy body, no protruding boot
+  SUV: ["an SUV", "a sport utility vehicle with high ground clearance"]
+  # card row 4: large vehicles with three seating rows, passenger and cargo use
+  MUV: ["a multi-utility vehicle", "an MPV people carrier", "a large car with three rows of seats"]
+  # card row 5: large passenger vehicles, public or private, office shuttles and intercity buses
+  Bus: ["a bus", "a city bus", "an intercity bus"]
+  # card row 6: heavy goods carriers with a front cabin and a rear cargo compartment
+  Truck: ["a truck", "a heavy goods truck with a front cabin and a cargo body"]
+  # card row 7: one front wheel, two rear wheels, covered passenger cabin
+  Three-wheeler: ["an auto-rickshaw", "a three-wheeled auto rickshaw with a covered passenger cabin", "a tuk-tuk"]
+  # card row 8: motorbikes and scooters, single or double riders; box includes the rider
+  Two-wheeler: ["a motorcycle with its rider", "a scooter with its rider", "a person riding a motorbike"]
+  # card row 9: lightweight goods carriers for short- to medium-distance transport
+  LCV: ["a light commercial vehicle", "a small goods carrier truck", "a Tata Ace-style mini truck"]
+  # card row 10: shorter, compact buses with fewer seats, often a flat front
+  Mini-bus: ["a minibus", "a small bus with a flat front"]
+  # card row 11: medium passenger vans, tall roof, side windows, protruding front
+  Tempo-traveller: ["a tempo traveller van", "a passenger minibus van", "a tall-roof passenger van with side windows"]
+  # card row 12: non-motorised pedal cycles; box includes the rider
+  Bicycle: ["a bicycle with its rider", "a person riding a bicycle"]
+  # card row 13: medium vehicles for goods or people, flat front, sliding side doors
+  Van: ["a van", "a small van with a flat front and a sliding side door"]
+  # card row 14: not covered elsewhere; agricultural, specialised or unconventional designs
+  Others: ["a tractor", "a tractor with a trailer", "an excavator", "a JCB backhoe loader", "a road roller",
+           "a handcart", "a pushcart"]
