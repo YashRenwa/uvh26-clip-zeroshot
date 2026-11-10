@@ -20,8 +20,8 @@ import pandas as pd
 import yaml
 
 from src.common import ROOT, add_common_args, load_config, set_seed, write_result
-from src.metrics import classification_report
-from src.pcu import class_factor_vector, pcu_errors, pcu_factors
+from src.metrics import classification_report, irc_prediction
+from src.pcu import categories, class_factor_vector, class_to_category, pcu_errors, pcu_factors
 from src.zeroshot import (embedding_fingerprint, image_embeddings, load_model, logit_scale, predict,
                           text_classifier)
 
@@ -48,9 +48,16 @@ def score_arm(cfg, model, processor, manifest, img_emb, prompt_path: Path, draft
     true = manifest["cls"].to_numpy()
     low = low_support_classes()
     rep = classification_report(cfg, true, pred, sm, low)
-    pcu = pcu_errors(manifest["stem"].to_numpy(), true, pred, class_factor_vector(cfg))
+    # PCU (DECISIONS.md #28): primary from the summed-softmax IRC prediction; argmax class kept as secondary.
+    stems = manifest["stem"].to_numpy()
+    c2k = class_to_category(cfg)
+    irc_pred, _ = irc_prediction(cfg, sm)
+    cat_factor = np.array([pcu_factors(cfg)["category_factor"][c] for c in categories(cfg)])
+    pcu = pcu_errors(stems, c2k[true], irc_pred, cat_factor)
+    pcu_argmax = pcu_errors(stems, true, pred, class_factor_vector(cfg))
     return {"prompts": info, "logit_scale": logit_scale(model), "image_embeddings_sha256": embedding_fingerprint(img_emb),
-            "low_support_classes": low, **rep, "pcu": pcu, "mean_score": float(score.mean()),
+            "low_support_classes": low, **rep, "pcu": pcu, "pcu_from_class_argmax": pcu_argmax,
+            "mean_score": float(score.mean()),
             "_pred": pred, "_score": score, "_softmax": sm}
 
 
@@ -87,7 +94,9 @@ def main() -> None:
           f"macro-F1 {out['macro_f1_headline']:.3f} (all present {out['macro_f1_all_present']:.3f}), "
           f"IRC accuracy {out['irc_accuracy']:.3f}, PCU MAE {out['pcu']['pcu_mae']:.2f} "
           f"({100 * out['pcu']['pcu_rel_mae']:.1f}% of mean {out['pcu']['mean_true_pcu']:.2f}), "
-          f"bias {out['pcu']['pcu_bias']:+.2f}")
+          f"bias {out['pcu']['pcu_bias']:+.2f} | secondary (argmax class): IRC accuracy "
+          f"{out['irc_accuracy_from_class_argmax']:.3f}, PCU MAE {out['pcu_from_class_argmax']['pcu_mae']:.2f}, "
+          f"bias {out['pcu_from_class_argmax']['pcu_bias']:+.2f}")
     print(f"timing: {timing}")
     short = [c[:6] for c in classes]
     print("confusion (rows true, cols predicted):")

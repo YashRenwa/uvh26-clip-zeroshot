@@ -43,6 +43,7 @@ smoke_images: 20              # val images used by --smoke
 confidence:
   n_bins: 15                  # equal-width score bins for reliability diagrams and ECE
   target_irc_accuracy: 0.95   # default; Yash confirms at G2
+  context_targets: [0.90, 0.98]   # coverage shown as context only, not alternatives (Yash, G2)
 
 bootstrap:
   n_resamples: 1000           # paired, over pseudo-camera groups

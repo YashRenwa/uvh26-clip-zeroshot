@@ -28,7 +28,8 @@
     "device": "cpu",
     "batch_size": 64,
     "peak_rss_mb": 1759.9,
-    "torch_threads": 8
+    "torch_threads": 8,
+    "from_dev_cache": true
   },
   "prompts": {
     "file": "baseline.yaml",
@@ -484,6 +485,13 @@
     "cycle"
   ],
   "pcu": {
+    "pcu_mae": 4.81410221238938,
+    "pcu_bias": 4.193368141592919,
+    "pcu_rel_mae": 0.2604813815253544,
+    "mean_true_pcu": 18.481559734513276,
+    "images": 452
+  },
+  "pcu_from_class_argmax": {
     "pcu_mae": 8.428527654867256,
     "pcu_bias": 8.108098008849558,
     "pcu_rel_mae": 0.45605066758123525,

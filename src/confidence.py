@@ -25,7 +25,7 @@ import numpy as np
 
 from src.common import ROOT, add_common_args, load_config, set_seed, write_result
 from src.metrics import irc_prediction
-from src.pcu import class_to_category, pcu_errors, pcu_factors, categories
+from src.pcu import categories, class_factor_vector, class_to_category, pcu_errors, pcu_factors
 
 RULE_PATH = ROOT / "results" / "frozen_rule.json"
 
@@ -100,6 +100,7 @@ def apply_rule(cfg: dict[str, Any], t: float | None, stems: np.ndarray, true_cls
         "accepted_class_accuracy": float((cls_pred[accept] == true_cls[accept]).mean()) if accept.any() else None,
         "pcu_no_review": pcu_errors(stems, irc_true, irc_pred, cat_factor),
         "pcu_after_review": pcu_errors(stems, irc_true, reviewed_irc, cat_factor),
+        "pcu_no_review_from_class_argmax": pcu_errors(stems, true_cls, cls_pred, class_factor_vector(cfg)),
     }
     return out
 
@@ -117,8 +118,10 @@ def arm_outputs(cfg: dict[str, Any], arm: str) -> dict[str, np.ndarray]:
     emb, _ = image_embeddings(cfg, model, processor, manifest, cache=cache)
     cls_emb, info = text_classifier(cfg, model, processor, ROOT / "prompts" / f"{arm}.yaml")   # frozen only
     _, _, sm = predict(emb, cls_emb, logit_scale(model))
+    from src.zeroshot import embedding_fingerprint
+
     return {"stems": manifest["stem"].to_numpy(), "true": manifest["cls"].to_numpy(), "softmax": sm,
-            "prompt_sha256": info["sha256"]}
+            "prompt_sha256": info["sha256"], "image_embeddings_sha256": embedding_fingerprint(emb)}
 
 
 def analyse(cfg: dict[str, Any], o: dict[str, np.ndarray]) -> dict[str, Any]:
@@ -129,16 +132,26 @@ def analyse(cfg: dict[str, Any], o: dict[str, np.ndarray]) -> dict[str, Any]:
     irc_true = class_to_category(cfg)[true]
     correct, irc_correct = pred == true, irc_pred == irc_true
     t = review_threshold(irc_score, irc_correct, target)
+    argmax_irc_correct = class_to_category(cfg)[pred] == irc_true
+    context = {}
+    for tgt in cfg["confidence"]["context_targets"]:
+        tc = review_threshold(irc_score, irc_correct, tgt)
+        r = apply_rule(cfg, tc, o["stems"], true, sm)
+        context[f"{tgt:.2f}"] = {k: r[k] for k in ("threshold", "coverage", "human_workload", "accepted_irc_accuracy")}
     return {
-        "prompt_sha256": o["prompt_sha256"], "n": int(len(true)),
+        "prompt_sha256": o["prompt_sha256"], "image_embeddings_sha256": o["image_embeddings_sha256"],
+        "n": int(len(true)),
         "class": {"accuracy": float(correct.mean()), "mean_score": float(score.mean()),
                   "ece": ece(score, correct, nb), "ece_equal_mass": ece(score, correct, nb, True),
                   "reliability": reliability(score, correct, nb), "coverage_curve": coverage_curve(score, correct)},
-        "irc": {"accuracy": float(irc_correct.mean()), "mean_score": float(irc_score.mean()),
+        "irc": {"accuracy": float(irc_correct.mean()),
+                "accuracy_from_class_argmax": float(argmax_irc_correct.mean()),
+                "mean_score": float(irc_score.mean()),
                 "ece": ece(irc_score, irc_correct, nb), "ece_equal_mass": ece(irc_score, irc_correct, nb, True),
                 "reliability": reliability(irc_score, irc_correct, nb),
                 "coverage_curve": coverage_curve(irc_score, irc_correct)},
         "rule": {"target_irc_accuracy": target, **apply_rule(cfg, t, o["stems"], true, sm)},
+        "rule_context_only": context,
     }
 
 
@@ -237,6 +250,9 @@ def main() -> None:
            "target_irc_accuracy": cfg["confidence"]["target_irc_accuracy"], "arms": {}}
     for arm in args.arms:
         res["arms"][arm] = analyse(cfg, arm_outputs(cfg, arm))
+    shas = {r["image_embeddings_sha256"] for r in res["arms"].values()}
+    assert len(shas) == 1, "arms must share one set of image embeddings"
+    res["image_embeddings_shared"] = True
     figs = cfg["paths"]["results_dir"] / "figures"
     res["figures"] = [str(plot_reliability(res, figs / "val_reliability.png")),
                       str(plot_coverage(res, figs / "val_coverage.png"))]
