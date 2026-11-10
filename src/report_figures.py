@@ -67,12 +67,33 @@ def first_five_failures(cfg: dict[str, Any]) -> str:
     return str(out.relative_to(ROOT))
 
 
+def leak_pair(cfg: dict[str, Any], rank: int, w: int = 800, h: int = 450) -> str:
+    """One audited test/val pair side by side (redacted), for the report's leakage figure."""
+    import cv2
+
+    from src.data import read_frame
+    from src.privacy import redact
+
+    r = pd.read_csv(ROOT / "results" / "leak_test_val" / "pairs.csv", dtype={"test_stem": str, "val_stem": str})
+    r = r[r["rank"] == rank].iloc[0]
+    gap = 10
+    tile = np.full((h, 2 * w + gap, 3), 255, np.uint8)
+    for k, stem in enumerate((r["test_stem"], r["val_stem"])):
+        f = cv2.resize(redact(read_frame(cfg, stem), stem), (w, h), interpolation=cv2.INTER_AREA)
+        tile[:, k * (w + gap): k * (w + gap) + w] = f
+    out = FIG_DIR / f"leak_pair_{rank:02d}.jpg"
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    cv2.imwrite(str(out), cv2.cvtColor(tile, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 86])
+    return str(out.relative_to(ROOT))
+
+
 def redaction_checklist(cfg: dict[str, Any], in_report: list[str]) -> pd.DataFrame:
     """Every pixel-showing image the report or notebook displays, with the Haar faces still detectable."""
     import cv2
 
     from src.privacy import face_count
 
+    in_report = in_report + sorted(str(p.relative_to(ROOT)) for p in FIG_DIR.glob("leak_pair_*.jpg"))
     files = in_report + ["results/figures/val_examples.png"] + \
         sorted(str(p.relative_to(ROOT)) for p in (ROOT / "results" / "failures").glob("*.png")) + \
         sorted(str(p.relative_to(ROOT)) for p in (ROOT / "results" / "leak_test_val").glob("*.jpg"))

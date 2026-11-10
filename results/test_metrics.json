@@ -5,13 +5,13 @@
   "n_groups": 410,
   "timing": {
     "crops": 6299,
-    "seconds": 164.2,
-    "ms_per_crop": 26.07,
+    "seconds": 184.6,
+    "ms_per_crop": 29.31,
     "includes": "PNG decode + crop + preprocessing + forward pass",
     "device": "cpu",
     "batch_size": 64,
-    "peak_rss_mb": 1786.2,
-    "torch_threads": 8
+    "peak_rss_mb": 2000.2,
+    "torch_threads": 12
   },
   "image_embeddings_sha256": "f07839d682e62b764cf98e31e646510b63ccb2fdc1d555617676542b7e3f605e",
   "image_embeddings_shared_by_arms": true,

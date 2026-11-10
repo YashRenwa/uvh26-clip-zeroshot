@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zero-shot CLIP vehicle counts (UVH-26)</title>
+<style>
+  @page { size: A4; margin: 11mm 12.5mm 11mm 12.5mm; }
+  :root { --ink: #111; --ink2: #444; --rule: #c9c8c0; --accent: #2a78d6; --soft: #f3f3ef; --yash: #fff6d6; --yashrule: #d9b44a; }
+  html { background: #fff; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 9.3pt; line-height: 1.27; color: var(--ink); margin: 0; }
+  h1 { font-size: 13.5pt; margin: 0 0 0.8mm; }
+  .byline { color: var(--ink2); font-size: 8.8pt; margin-bottom: 2mm; }
+  h2 { break-after: avoid; font-size: 10.8pt; margin: 2.8mm 0 1mm; border-bottom: 0.4pt solid var(--rule); padding-bottom: 0.5mm; }
+  p { margin: 0 0 1.5mm; }
+  table { border-collapse: collapse; font-size: 8.3pt; margin: 0.8mm 0 1.6mm; }
+  th, td { padding: 0.45mm 1.6mm; border-bottom: 0.4pt solid var(--rule); text-align: right; vertical-align: top; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { border-bottom: 0.8pt solid var(--ink2); font-weight: 600; }
+  td.l, th.l { text-align: left; }
+  .ci { color: var(--ink2); font-size: 7.6pt; }
+  .cap { font-size: 8.1pt; color: var(--ink2); margin: 0.6mm 0 1.8mm; line-height: 1.25; }
+  .cap b { color: var(--ink); }
+  .row { display: flex; gap: 3mm; align-items: flex-start; break-inside: avoid; }
+  .row > div { flex: 1; min-width: 0; }
+  img { max-width: 100%; display: block; }
+  .small { font-size: 8.5pt; }
+  .yash { background: var(--yash); border-left: 1.2mm solid var(--yashrule); padding: 1.2mm 2mm; margin: 1mm 0 1.8mm; font-size: 8.6pt; break-inside: avoid; }
+  .yash b.tag { color: #8a5a00; }
+  .yash ul { margin: 0.5mm 0 0 4mm; padding: 0; }
+  .yash li { margin: 0 0 0.3mm; }
+  .refs p { font-size: 8pt; margin: 0 0 0.6mm; }
+  .page-break { break-before: page; }
+</style>
+</head>
+<body>
+
+<h1>Can a model nobody trained on these cameras count vehicles for signal timing? Zero-shot CLIP on UVH-26</h1>
+<div class="byline">Yash Renwa · 2025AG05357 · AIML ZG525 Computer Vision, EC-1 Assignment 2 · Track C (vision-language, zero-shot classification) · Code and notebook: github.com/YashRenwa/uvh26-clip-zeroshot</div>
+
+<h2>1. Problem and track</h2>
+<p>Green time at a junction is set from approach demand in Passenger Car Units (PCU, IRC:106-1990): a truck or bus weighs {{pcu_factor.truck_bus:f2}} cars, an auto-rickshaw {{pcu_factor.auto:f1}}, a two-wheeler {{pcu_factor.two_wheeler:f2}}. Assignment 1 met this need with a detector fine-tuned on labelled frames. A new camera has no labels. This project asks whether a frozen vision-language model can name each vehicle from words alone, well enough for PCU, and whether its own score can say which vehicles a person must check. Boxes are the dataset's ground-truth boxes, so only classification is measured; per-frame PCU is the sum of the factors of the predicted IRC categories.</p>
+<div class="yash"><b class="tag">[YASH] Why Track C, and not A or B</b> (write in your own words; notes):
+<ul>
+<li>The constraint is the camera, not the model: zero labelled frames at deployment. Only a zero-shot vision-language model gives class names without training data; classes are described in text.</li>
+<li>Track A (ViT vs CNN) compares two models that both need a labelled training set; at an unlabelled camera neither can be trained, and A1 already measured what labelled training buys.</li>
+<li>Track B (generation) produces images, not counts; synthetic traffic would not estimate demand at this junction.</li>
+<li>Track C lets the measurement be the point: how good is a frozen model here, and can its score route work to a person.</li>
+</ul></div>
+
+<h2>2. Data, licence and contamination</h2>
+<p><b>Source.</b> UVH-26 (IISc AIM with Bengaluru Traffic Police; <b>CC BY 4.0</b>; Hub revision 59f82c5): 1920×1080 frames from Bengaluru Safe City cameras, captured February 2025, 14 classes, STAPLE (ST) consensus boxes. <b>Split.</b> Assignment 1's pseudo-camera split, reused unchanged and checksum-verified (sha256 f8181d24…): val {{split.val_images:int}} images ({{split.val_groups:int}} pseudo-cameras), test {{split.test_images:int}} ({{split.test_groups:int}}), {{split.groups_shared_val_test:int}} pseudo-cameras in both. After dropping {{data.test.exact_duplicates_dropped:int}} exact duplicate boxes per split, val has {{data.val.crops:int}} crops and test {{data.test.crops:int}}. Each crop is a square around the box with 10% context, padded with CLIP's mean pixel. Mini-bus, Tempo-traveller and Others have fewer than 30 test crops and are left out of the headline macro-F1.</p>
+<p><b>What the model has seen.</b> CLIP ViT-B/16 was trained on 400M web image–text pairs collected before 2021; these frames were captured in 2025 and published after, so the test images themselves cannot be in its training data. Captioned Indian street photos ("auto-rickshaw", "Tata Ace") very likely are, which is what zero-shot relies on. <b>Within the project</b>, prompts and the review threshold were tuned on val only. A by-eye audit of {{leak.n:int}} seeded random test images against their most similar val image found {{leak.same_camera:int}} same-camera pairs: val–test camera overlap ≈ {{leak.leakage_estimate:pct0}} (95% CI {{leak.ci95.lo:pct0}}–{{leak.ci95.hi:pct0}}). Gradient-thumbnail similarity misses some of them (Figure 2), so the audit, not a threshold count, is the estimate. Prompts were written from the class definitions and revised at most twice, so this overlap can flatter test only slightly.</p>
+<img src="figures/val_examples.png">
+<div class="cap"><b>Figure 1.</b> One seeded random val crop per class, as CLIP sees it (faces blurred). The Bicycle example is a car carrying a duplicate STAPLE box labelled Bicycle; see the label-noise finding in Step 7.</div>
+<img src="figures/leak_pair_12.jpg" style="width:86%;margin:0 auto">
+<div class="cap"><b>Figure 2.</b> Leak audit pair #12: a test frame (left) and its nearest val frame (right) are the same camera (same parked red hatchback and grey SUV, same pillar sign), yet their gradient similarity is only g = {{leak.pair12.g:f2}} because a different truck fills each frame.</div>
+
+<h2>3. The frozen baseline</h2>
+<p><code>openai/clip-vit-base-patch16</code>, revision 57c2164 (pinned in code and printed in the notebook), fp32 on CPU, used as published: CLIP's own processor, L2-normalised embeddings, logits = CLIP's logit scale (100) × cosine, softmax over the 14 class prompts, prediction = argmax. Nothing is fine-tuned, no temperature is fitted. Baseline prompt: <i>"a photo of a {class name}."</i>. For PCU, the IRC category is the one with the highest <b>summed</b> softmax over its classes, and that sum is the IRC score; this rule was fixed on val before test. The argmax→category version is reported as a secondary column.</p>
+
+<h2>4. One controlled intervention: the text prompts</h2>
+<p>The ensemble arm changes only the text: per class, it averages the text embeddings of six camera-aware templates ("a CCTV image of {}", "a top-down traffic camera view of {}", …) × several descriptive names written from the dataset card's class table (e.g. Three-wheeler: "an auto-rickshaw", "a green and yellow auto-rickshaw"; Others: "an agricultural tractor", "a road roller"). Image embeddings are computed once and shared by both arms; the notebook asserts their hash is identical. Design used val only, with at most two revisions, and the baseline's val confusion was already known when the first version was written. The version with the best val IRC accuracy was frozen by sha256 before test was opened:</p>
+<table class="small">
+<thead><tr><th>Val ({{data.val.crops:int}} crops)</th><th>baseline</th><th>v1</th><th><b>v2 (frozen)</b></th><th>v3</th></tr></thead>
+<tr><td>IRC accuracy</td><td>{{prompt_log.baseline.irc_accuracy:f3}}</td><td>{{prompt_log.v1.irc_accuracy:f3}}</td><td><b>{{prompt_log.v2.irc_accuracy:f3}}</b></td><td>{{prompt_log.v3.irc_accuracy:f3}}</td></tr>
+<tr><td>PCU MAE per frame (argmax class)</td><td>{{prompt_log.baseline.pcu_mae:f2}}</td><td>{{prompt_log.v1.pcu_mae:f2}}</td><td><b>{{prompt_log.v2.pcu_mae:f2}}</b></td><td>{{prompt_log.v3.pcu_mae:f2}}</td></tr>
+</table>
+
+<h2>5. Evaluation on data never tuned on</h2>
+<p>Test was opened only after the prompts and threshold were frozen. The notebook's fresh-kernel run re-scores it with the same files and reproduces the first opening's image embeddings exactly. Intervals are 95% paired percentile bootstrap over pseudo-camera groups ({{test.bootstrap.resamples:int}} resamples, seed {{seed:int}}).</p>
+<table>
+<thead><tr><th></th><th>Val baseline</th><th>Val ensemble</th><th>Test baseline</th><th>Test ensemble</th><th>Test difference (95% CI)</th></tr></thead>
+<tr><td>14-class accuracy</td><td>{{val.baseline.accuracy:f3}}</td><td>{{val.ensemble.accuracy:f3}}</td><td>{{test.baseline.accuracy:f3}} <span class="ci">[{{test.baseline.ci95.accuracy.lo:f3}}, {{test.baseline.ci95.accuracy.hi:f3}}]</span></td><td><b>{{test.ensemble.accuracy:f3}}</b> <span class="ci">[{{test.ensemble.ci95.accuracy.lo:f3}}, {{test.ensemble.ci95.accuracy.hi:f3}}]</span></td><td>{{test.diff.accuracy.lo:sf3}} to {{test.diff.accuracy.hi:sf3}}</td></tr>
+<tr><td>Balanced accuracy</td><td>{{val.baseline.balanced_accuracy:f3}}</td><td>{{val.ensemble.balanced_accuracy:f3}}</td><td>{{test.baseline.balanced_accuracy:f3}}</td><td><b>{{test.ensemble.balanced_accuracy:f3}}</b></td><td></td></tr>
+<tr><td>Macro-F1 (11 classes ≥ 30 crops)</td><td>{{val.baseline.macro_f1_headline:f3}}</td><td>{{val.ensemble.macro_f1_headline:f3}}</td><td>{{test.baseline.macro_f1_headline:f3}} <span class="ci">[{{test.baseline.ci95.macro_f1_headline.lo:f3}}, {{test.baseline.ci95.macro_f1_headline.hi:f3}}]</span></td><td><b>{{test.ensemble.macro_f1_headline:f3}}</b> <span class="ci">[{{test.ensemble.ci95.macro_f1_headline.lo:f3}}, {{test.ensemble.ci95.macro_f1_headline.hi:f3}}]</span></td><td>{{test.diff.macro_f1_headline.lo:sf3}} to {{test.diff.macro_f1_headline.hi:sf3}}</td></tr>
+<tr><td>IRC accuracy (summed)</td><td>{{val.baseline.irc_accuracy:f3}}</td><td>{{val.ensemble.irc_accuracy:f3}}</td><td>{{test.baseline.irc_accuracy:f3}} <span class="ci">[{{test.baseline.ci95.irc_accuracy.lo:f3}}, {{test.baseline.ci95.irc_accuracy.hi:f3}}]</span></td><td><b>{{test.ensemble.irc_accuracy:f3}}</b> <span class="ci">[{{test.ensemble.ci95.irc_accuracy.lo:f3}}, {{test.ensemble.ci95.irc_accuracy.hi:f3}}]</span></td><td>{{test.diff.irc_accuracy.lo:sf3}} to {{test.diff.irc_accuracy.hi:sf3}}</td></tr>
+<tr><td class="ci">  IRC accuracy, argmax class (secondary)</td><td class="ci">{{val.baseline.irc_accuracy_from_class_argmax:f3}}</td><td class="ci">{{val.ensemble.irc_accuracy_from_class_argmax:f3}}</td><td class="ci">{{test.baseline.irc_accuracy_from_class_argmax:f3}}</td><td class="ci">{{test.ensemble.irc_accuracy_from_class_argmax:f3}}</td><td></td></tr>
+<tr><td>PCU MAE per frame</td><td>{{val.baseline.pcu.pcu_mae:f2}}</td><td>{{val.ensemble.pcu.pcu_mae:f2}}</td><td>{{test.baseline.pcu.pcu_mae:f2}} <span class="ci">[{{test.baseline.ci95.pcu_mae.lo:f2}}, {{test.baseline.ci95.pcu_mae.hi:f2}}]</span></td><td><b>{{test.ensemble.pcu.pcu_mae:f2}}</b> <span class="ci">[{{test.ensemble.ci95.pcu_mae.lo:f2}}, {{test.ensemble.ci95.pcu_mae.hi:f2}}]</span></td><td>{{test.diff.pcu_mae.lo:sf2}} to {{test.diff.pcu_mae.hi:sf2}}</td></tr>
+<tr><td>  as share of mean demand; bias</td><td>{{val.baseline.pcu.pcu_rel_mae:pct1}}; {{val.baseline.pcu.pcu_bias:sf2}}</td><td>{{val.ensemble.pcu.pcu_rel_mae:pct1}}; {{val.ensemble.pcu.pcu_bias:sf2}}</td><td>{{test.baseline.pcu.pcu_rel_mae:pct1}}; {{test.baseline.pcu.pcu_bias:sf2}}</td><td>{{test.ensemble.pcu.pcu_rel_mae:pct1}}; {{test.ensemble.pcu.pcu_bias:sf2}}</td><td></td></tr>
+<tr><td class="ci">  PCU MAE, argmax class (secondary)</td><td class="ci">{{val.baseline.pcu_argmax.pcu_mae:f2}}</td><td class="ci">{{val.ensemble.pcu_argmax.pcu_mae:f2}}</td><td class="ci">{{test.baseline.pcu_argmax.pcu_mae:f2}}</td><td class="ci">{{test.ensemble.pcu_argmax.pcu_mae:f2}}</td><td></td></tr>
+</table>
+<div class="cap" style="margin-top:-0.8mm"><b>Table 1.</b> Both arms, same image embeddings, val and test. Test: {{test.crops:int}} crops, {{test.images:int}} frames, mean demand {{test.ensemble.pcu.mean_true_pcu:f2}} PCU per frame. Headline arm (chosen on val): ensemble.</div>
+<div class="row">
+  <div style="flex:1.05">
+  <p><b>Finding: the prompt change alone is a large, robust gain.</b> On unseen cameras the ensemble names the IRC category of {{test.ensemble.irc_accuracy:pct1}} of vehicles against {{test.baseline.irc_accuracy:pct1}}, and cuts the per-frame PCU error from {{test.baseline.pcu.pcu_mae:f2}} to {{test.ensemble.pcu.pcu_mae:f2}} ({{test.ensemble.pcu.pcu_rel_mae:pct1}} of demand); every bootstrap resample favours it. The baseline over-counts demand (bias {{test.baseline.pcu.pcu_bias:sf2}} PCU per frame), so its errors push vehicles into heavier categories. Val and test agree closely for both arms, so tuning the prompts on val did not over-fit it.</p>
+  <p><b>Where accuracy is lost (Figure 3).</b> Cars, two-wheelers and autos are mostly right. Trucks and buses are the weak category, mostly called LCVs or autos, and LCVs are often called cars. Car subtypes are confused with each other (14-class accuracy {{test.ensemble.accuracy:pct1}}), which costs nothing in PCU.</p>
+  <p class="small"><b>What labelled training bought</b> (reference, not a baseline): Assignment 1's fine-tuned YOLOv8 on the same test frames reached PCU MAE {{a1.pcu_mae:f2}} per frame ({{a1.pcu_rel_mae:pct1}} of demand). That figure includes its detection errors and ours does not, so the two are not directly comparable.</p>
+  </div>
+  <div style="flex:0.78"><img src="figures/test_confusion_irc_ensemble.png"><div class="cap"><b>Figure 3.</b> Test IRC-category confusion, ensemble arm (row share and crop count).</div></div>
+</div>
+
+<h2>6. Confidence against correctness</h2>
+<p>The score is a softmax value (14-class) or its sum over a category (IRC). It is not a probability: whether it tracks correctness is measured, not assumed. With the ensemble prompts it does track correctness (Figure 4): test ECE of the IRC score is {{test.ensemble.irc.ece:f3}} ({{test.ensemble.irc.ece_equal_mass:f3}} with equal-mass bins), against {{test.baseline.irc.ece:f3}} for the baseline. The coverage curve shows accuracy rising steadily as the threshold rises.</p>
+<div class="row" style="align-items:flex-end"><div style="flex:1.04"><img src="figures/test_reliability.png"></div><div style="flex:1.6"><img src="figures/test_coverage.png"></div></div>
+<div class="cap"><b>Figure 4.</b> Left: reliability diagrams, 15 equal-width bins (14-class score and IRC score). Right: coverage curves, accuracy of the crops kept vs share kept. Thick: test; thin: val.</div>
+<p><b>The review rule.</b> A crop is accepted without review if its IRC score ≥ <i>t</i>; <i>t</i> is the lowest threshold at which accepted val crops reach 95% IRC accuracy (target set before test), frozen on val for both arms.</p>
+<table>
+<thead><tr><th>Review rule on test</th><th><i>t</i> (val)</th><th>Accepted unseen</th><th>Accepted IRC accuracy (95% CI)</th><th>Accepted 14-class acc.</th><th>Sent to a person</th><th>PCU MAE before → after review</th></tr></thead>
+<tr><td>Baseline</td><td>{{test.baseline.rule.threshold:f4}}</td><td>{{test.baseline.rule.coverage:pct1}}</td><td>{{test.baseline.rule.accepted_irc_accuracy:pct1}} <span class="ci">[{{test.baseline.ci95.accepted_irc_accuracy.lo:pct1}}, {{test.baseline.ci95.accepted_irc_accuracy.hi:pct1}}]</span></td><td>{{test.baseline.rule.accepted_class_accuracy:pct1}}</td><td>{{test.baseline.rule.human_workload:pct1}}</td><td>{{test.baseline.rule.pcu_mae_before_review:f2}} → {{test.baseline.rule.pcu_mae_after_review:f2}}</td></tr>
+<tr><td><b>Ensemble</b></td><td>{{test.ensemble.rule.threshold:f4}}</td><td><b>{{test.ensemble.rule.coverage:pct1}}</b></td><td><b>{{test.ensemble.rule.accepted_irc_accuracy:pct1}}</b> <span class="ci">[{{test.ensemble.ci95.accepted_irc_accuracy.lo:pct1}}, {{test.ensemble.ci95.accepted_irc_accuracy.hi:pct1}}]</span></td><td>{{test.ensemble.rule.accepted_class_accuracy:pct1}}</td><td>{{test.ensemble.rule.human_workload:pct1}}</td><td>{{test.ensemble.rule.pcu_mae_before_review:f2}} → {{test.ensemble.rule.pcu_mae_after_review:f2}}</td></tr>
+</table>
+<p>The ensemble rule held its target on unseen cameras: {{test.ensemble.rule.coverage:pct1}} of crops (val {{val.ensemble.rule.coverage:pct1}}) need no person, at {{test.ensemble.rule.accepted_irc_accuracy:pct1}} IRC accuracy. The baseline's rule was fragile on val (its coverage curve hovers near 95% at low coverage) and on test accepts only {{test.baseline.rule.coverage:pct1}}, below target. The rule targets IRC categories, so accepted crops are right at the 14-class level only {{test.ensemble.rule.accepted_class_accuracy:pct1}} of the time; per-class counts of car subtypes are not promised. <b>{{test.ensemble.rule.accepted_irc_accuracy:pct1}} is a lower bound:</b> in the seeded draw of 10 accepted errors, {{fail.tags.confident.label:int}} are label errors where CLIP is right (Section 7).</p>
+
+<h2>7. Failure analysis</h2>
+<p><b>Draw.</b> With the project seed, 30 errors were drawn at random from all {{fail.class_errors:int}} 14-class test errors of the ensemble, then 10 from the {{fail.accepted_irc_wrong:int}} errors the review rule lets through (IRC score ≥ <i>t</i>, IRC wrong). None was chosen by hand. Each was tagged with one cause from the crop and its frame (tags judged by Claude at my request and reviewed by me).</p>
+<div class="row">
+  <div style="flex:1">
+  <table class="small">
+  <thead><tr><th>Cause</th><th>Random 30</th><th>Accepted 10</th></tr></thead>
+  <tr><td>Occlusion by another vehicle</td><td>{{fail.tags.random.occlusion:int}}</td><td>{{fail.tags.confident.occlusion:int}}</td></tr>
+  <tr><td>Small (long side &lt; 96 px)</td><td>{{fail.tags.random.small:int}}</td><td>{{fail.tags.confident.small:int}}</td></tr>
+  <tr><td>Look-alike class</td><td>{{fail.tags.random.lookalike:int}}</td><td>0</td></tr>
+  <tr><td>A neighbour fills the crop</td><td>{{fail.tags.random.context:int}}</td><td>{{fail.tags.confident.context:int}}</td></tr>
+  <tr><td>Cut by the frame edge</td><td>{{fail.tags.random.truncated:int}}</td><td>{{fail.tags.confident.truncated:int}}</td></tr>
+  <tr><td>IR / night frame</td><td>{{fail.tags.random.ir_night:int}}</td><td>0</td></tr>
+  <tr><td>Label error (CLIP right)</td><td>{{fail.tags.random.label:int}}</td><td><b>{{fail.tags.confident.label:int}}</b></td></tr>
+  <tr><td>Other</td><td>{{fail.tags.random.other:int}}</td><td>0</td></tr>
+  </table>
+  <table class="small">
+  <thead><tr><th>All {{test.crops:int}} test crops</th><th>Crops</th><th>IRC error rate</th></tr></thead>
+  <tr><td>Overlap with another box: IoU 0</td><td>{{fail.pattern.occlusion_iou.0.crops:int}}</td><td>{{fail.pattern.occlusion_iou.0.irc_error_rate:pct1}}</td></tr>
+  <tr><td>  IoU ≥ 0.3</td><td>{{fail.pattern.occlusion_iou.>=0.3.crops:int}}</td><td>{{fail.pattern.occlusion_iou.>=0.3.irc_error_rate:pct1}}</td></tr>
+  <tr><td>Inside the frame</td><td>{{fail.pattern.frame_edge.inside frame.crops:int}}</td><td>{{fail.pattern.frame_edge.inside frame.irc_error_rate:pct1}}</td></tr>
+  <tr><td>  within 3 px of the frame edge</td><td>{{fail.pattern.frame_edge.touches edge.crops:int}}</td><td>{{fail.pattern.frame_edge.touches edge.irc_error_rate:pct1}}</td></tr>
+  <tr><td>Long side ≥ 96 px</td><td>{{fail.pattern.size_bin.>=96.crops:int}}</td><td>{{fail.pattern.size_bin.>=96.irc_error_rate:pct1}}</td></tr>
+  <tr><td>  32–95 px</td><td>{{fail.pattern.size_bin.32-95.crops:int}}</td><td>{{fail.pattern.size_bin.32-95.irc_error_rate:pct1}}</td></tr>
+  <tr><td>True class Truck</td><td>{{fail.pattern.true_class.Truck.crops:int}}</td><td>{{fail.pattern.true_class.Truck.irc_error_rate:pct1}}</td></tr>
+  </table>
+  </div>
+  <div style="flex:0.85"><img src="figures/failures_first5.png"><div class="cap"><b>Figure 5.</b> The first five of the seeded random draw (not chosen by hand), with true and predicted class, score and cause tag. Faces blurred.</div></div>
+</div>
+<p><b>Occlusion, neighbouring vehicles, frame-edge cuts and small size</b> account for {{fail.tags.random.fills_crop:int}} of the 30 random errors, and each tag raises the error rate across all test crops, not just the drawn ones (second table). <b>Trucks are the costliest class for PCU:</b> {{fail.pattern.true_class.Truck.irc_error_rate:pct1}} of trucks get the wrong IRC category. They are {{pcu_mass.Truck.crop_share:pct1}} of crops but carry {{pcu_mass.Truck.share:pct1}} of all per-crop PCU error ({{pcu_mass.Truck.abs:f0}} of {{pcu_mass.total_abs:f0}} PCU), almost all of it under-count (net {{pcu_mass.Truck.net:sf0}}): a truck ({{pcu_factor.truck_bus:f2}}) read as an LCV ({{pcu_factor.lcv:f2}}), auto ({{pcu_factor.auto:f1}}) or car ({{pcu_factor.car:f1}}). The review rule does not catch them: {{accepted.Truck.irc_wrong:int}} of the {{accepted.Truck.crops:int}} trucks it accepts are wrong. This weakness was already visible on val before test was opened.</p>
+<div class="yash"><b class="tag">[YASH] The named failure pattern</b> (your wording; notes):
+<ul>
+<li>Candidate: "CLIP names what fills the crop, not the vehicle in the box: occlusion, neighbours, frame-edge cuts and small size account for {{fail.tags.random.fills_crop:int}} of 30 random errors."</li>
+<li>Support: error rate rises with overlap ({{fail.pattern.occlusion_iou.0.irc_error_rate:pct1}} → {{fail.pattern.occlusion_iou.>=0.3.irc_error_rate:pct1}} IRC; 14-class {{fail.pattern.occlusion_iou.0.class_error_rate:pct1}} → {{fail.pattern.occlusion_iou.>=0.3.class_error_rate:pct1}}), at the frame edge ({{fail.pattern.frame_edge.touches edge.irc_error_rate:pct1}} vs {{fail.pattern.frame_edge.inside frame.irc_error_rate:pct1}}) and for small crops ({{fail.pattern.size_bin.32-95.irc_error_rate:pct1}} vs {{fail.pattern.size_bin.>=96.irc_error_rate:pct1}}).</li>
+<li>Name trucks as the costliest class for PCU, and say why (a large vehicle partly in view or behind others reads as an LCV or auto).</li>
+</ul></div>
+<p><b>Label noise.</b> Some vehicles carry two ST boxes with different classes at IoU ≥ 0.99 (STAPLE double labels): {{dup.test.groups:int}} groups, {{dup.test.crops_in_groups:int}} test crops ({{dup.test.share:pct1}}); Figure 1's Bicycle is one. As a secondary check defined after test was opened (headline unchanged), excluding these crops moves the ensemble to accuracy {{dup.ensemble.excl.accuracy:f3}}, IRC accuracy {{dup.ensemble.excl.irc_accuracy:f3}}, PCU MAE {{dup.ensemble.excl.pcu_mae:f2}} and accepted IRC accuracy {{dup.ensemble.excl.accepted_irc_accuracy:pct1}}. Assignment 1's labels carry the same duplicates.</p>
+
+<h2>8. Ethics and privacy</h2>
+<p><b>Risk in this system.</b> CLIP matches images against any text. The same pipeline on city cameras could be asked for a person ("a woman in a red saree riding a scooter") instead of a vehicle class, turning a counting tool into a search tool for individuals; the frames also show faces and number plates. <b>Mitigations implemented.</b> (1) Closed vocabulary: classifiers are built only from prompt files registered by sha256, and the notebook shows a free-text prompt file being refused. (2) Image embeddings stay in memory in the notebook run and no embedding file is written (asserted); outputs are per-crop class, score and per-frame counts. (3) Every figure with pixels passes a face blur (OpenCV Haar) plus manual boxes, and each was checked by eye. <b>Costed, not built:</b> a number-plate detector (one more model with its own misses).</p>
+<div class="yash"><b class="tag">[YASH] Ethics judgement</b> (your view; notes):
+<ul>
+<li>Is the closed vocabulary enough? It stops misuse of this code, not of CLIP; anyone with the weights can type free text.</li>
+<li>Who reviews the {{test.ensemble.rule.human_workload:pct0}} of crops sent to a person, and what they see (crops, not whole frames).</li>
+<li>Error is not neutral: under-counted trucks shorten green time on freight-heavy approaches.</li>
+</ul></div>
+
+<h2>Conclusion</h2>
+<div class="yash"><b class="tag">[YASH] Conclusion</b> (your call; notes):
+<ul>
+<li>What you would deploy: the ensemble prompts with the review rule (t = {{test.ensemble.rule.threshold:f4}}): {{test.ensemble.rule.coverage:pct0}} of crops need no person at ≥ {{test.ensemble.rule.accepted_irc_accuracy:pct1}} IRC accuracy; PCU MAE {{test.ensemble.pcu.pcu_mae:f2}} without review.</li>
+<li>The number you refuse to promise: truck/bus counts, and car-subtype counts.</li>
+<li>One change was enough to matter: prompts only, same image embeddings.</li>
+<li>Caveats: ≈{{leak.leakage_estimate:pct0}} val–test camera overlap; ground-truth boxes (no detection errors); label noise makes accepted accuracy a lower bound.</li>
+</ul></div>
+
+<h2>Declarations and references</h2>
+<div class="refs">
+<p><b>AI assistance.</b> Claude (Anthropic), working through Claude Code, wrote the code in the repository, ran it on my machine, drafted the prompt files from the dataset card under my constraints, proposed analysis options, judged the leak-audit pairs, the 40 failure-cause tags and the remaining face detections by eye at my request (I reviewed them), and drafted the factual sections of this report from <code>report/numbers.json</code>. I chose the problem, the track and the reuse of Assignment 1's split, and made the decisions recorded in the decision log: the 95% IRC review target, the redaction method, the leak audit and its reported estimate, the prompt constraints and selection rule, the summed-softmax IRC rule, the frozen prompts, threshold and headline arm, the duplicate-label check, and the cause tags. Sections marked [YASH] are mine. No hosted API was used; no data left my machine except downloads from the Hugging Face Hub.</p>
+<p><b>Dataset.</b> A. Sharma et al. <i>Towards Image Annotations and Accurate Vision Models for Indian Traffic, UVH-26-v1.0.</i> IISc, 2025. arXiv:2511.02563. CC BY 4.0. · A. Radford et al. Learning transferable visual models from natural language supervision (CLIP). ICML 2021. · S. K. Warfield, K. H. Zou, W. M. Wells. STAPLE. IEEE TMI 23(7), 2004. · Indian Roads Congress. IRC:106-1990.</p>
+</div>
+</body>
+</html>

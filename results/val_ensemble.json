@@ -22,14 +22,13 @@
   },
   "timing": {
     "crops": 6630,
-    "seconds": 176.4,
-    "ms_per_crop": 26.6,
+    "seconds": 195.4,
+    "ms_per_crop": 29.47,
     "includes": "PNG decode + crop + preprocessing + forward pass",
     "device": "cpu",
     "batch_size": 64,
-    "peak_rss_mb": 1759.9,
-    "torch_threads": 8,
-    "from_dev_cache": true
+    "peak_rss_mb": 1901.6,
+    "torch_threads": 12
   },
   "prompts": {
     "file": "ensemble.yaml",

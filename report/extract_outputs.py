@@ -43,6 +43,10 @@ def main() -> None:
           "seed": prov["run"]["seed"]}
     flatten("split", prov["split"], n)
     flatten("leak", {k: v for k, v in prov["test_val_leakage"].items() if k not in ("same_camera_pairs",)}, n)
+    n["leak.ci95.lo"], n["leak.ci95.hi"] = prov["test_val_leakage"]["leakage_95ci"]
+    pairs = pd.read_csv(R / "leak_test_val" / "pairs.csv")
+    for rank in (1, 12, 13):
+        n[f"leak.pair{rank}.g"] = float(pairs.loc[pairs["rank"] == rank, "g"].iloc[0])
     for s in ("val", "test"):
         for k in ("images", "raw_boxes", "exact_duplicates_dropped", "crops", "groups", "ir_crops", "truncated_crops"):
             n[f"data.{s}.{k}"] = data[s][k]
@@ -111,6 +115,31 @@ def main() -> None:
             key = str(list(rec.values())[0])
             for k in ("crops", "irc_errors", "irc_error_rate", "class_error_rate"):
                 n[f"fail.pattern.{table}.{key}.{k}"] = rec[k]
+
+    # per-class PCU error mass of the headline arm on test (summed-softmax IRC prediction)
+    rule = load("frozen_rule")
+    arm = rule["headline_arm"]
+    t_arm = rule["rules"][arm]["threshold"]
+    from src.pcu import pcu_factors
+    full_cfg = __import__("src.common", fromlist=["load_config"]).load_config()
+    cf = pcu_factors(full_cfg)["category_factor"]
+    cmap = full_cfg["pcu"]["class_map"]
+    tp = pd.read_csv(R / "test_predictions.csv")
+    err = tp[f"{arm}_irc_pred"].map(cf) - tp["true"].map(cmap).map(cf)
+    total = float(err.abs().sum())
+    n["pcu_mass.total_abs"] = total
+    for c, g in err.groupby(tp["true"]):
+        n[f"pcu_mass.{c}.abs"] = float(g.abs().sum())
+        n[f"pcu_mass.{c}.net"] = float(g.sum())
+        n[f"pcu_mass.{c}.share"] = float(g.abs().sum() / total)
+        n[f"pcu_mass.{c}.crop_share"] = float(len(g) / len(tp))
+    acc = tp[f"{arm}_irc_score"] >= t_arm
+    wrong = tp[f"{arm}_irc_pred"] != tp["true"].map(cmap)
+    for c in ("Truck", "LCV"):
+        n[f"accepted.{c}.crops"] = int((acc & (tp["true"] == c)).sum())
+        n[f"accepted.{c}.irc_wrong"] = int((acc & wrong & (tp["true"] == c)).sum())
+    for k in ("truck_bus", "lcv", "auto", "car", "two_wheeler"):
+        n[f"pcu_factor.{k}"] = cf[k]
 
     lc = load("label_check")
     flatten("dup", {s: {k: v for k, v in d.items() if k != "group_size_distribution"} for s, d in lc["splits"].items()}, n)

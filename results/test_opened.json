@@ -12,6 +12,19 @@
         "baseline": 0.8545581998828602,
         "ensemble": 0.8956350988433569
       }
+    },
+    {
+      "at": "2026-11-11 00:14:54 IST",
+      "note": "notebook run (fresh kernel)",
+      "test_sha256": "f8181d247d7e034f5810b2bb2a978e2739e5055dbc8b3240877c5caa1f667ff6",
+      "prompt_sha256": {
+        "baseline": "2e69fdead32879056fbb4607b06c8215f537a0ebaf0dfe9bdb539c908a3a6c54",
+        "ensemble": "84219edffad0223da81fd2bcb79708f01584fa5ccf17582bb5165ce022b544a9"
+      },
+      "thresholds": {
+        "baseline": 0.8545581998828602,
+        "ensemble": 0.8956350988433569
+      }
     }
   ]
 }
