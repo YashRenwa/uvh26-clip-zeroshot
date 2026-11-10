@@ -38,8 +38,7 @@ crops:
   size_bins: [32, 96]         # long side px: <32, 32-95, >=96
   ir_threshold: 2.0           # frame is near-greyscale if mean |R-G| + |G-B| < this
 
-smoke:
-  n_images: 20                # val images used by --smoke
+smoke_images: 20              # val images used by --smoke
 
 confidence:
   n_bins: 15                  # equal-width score bins for reliability diagrams and ECE

@@ -1,0 +1,16 @@
+class,val,test
+Hatchback,619,607
+Sedan,379,356
+SUV,347,300
+MUV,223,212
+Bus,212,147
+Truck,350,339
+Three-wheeler,1006,937
+Two-wheeler,2981,2816
+LCV,329,372
+Mini-bus,18,25
+Tempo-traveller,21,28
+Bicycle,97,95
+Van,44,62
+Others,4,3
+total,6630,6299

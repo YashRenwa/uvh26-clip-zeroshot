@@ -1,0 +1,30 @@
+{
+  "method": "40 random test images (numpy default_rng(seed=42).permutation), each paired with its most similar val image by 64x36 gradient-magnitude correlation g (A1 protocol); judged by eye by Yash: same / unclear / different",
+  "n": 40,
+  "val_images": 452,
+  "test_images": 477,
+  "g_drawn": {
+    "min": 0.1645,
+    "median": 0.2282,
+    "max": 0.4256
+  },
+  "g_nearest_val_all_test": {
+    "p10": 0.1741,
+    "median": 0.2291,
+    "p90": 0.2865,
+    "count_ge_0.36": 18,
+    "count_ge_0.48": 0
+  },
+  "a1_thumbnail_agreement": {
+    "images": 929,
+    "min_r": 0.9962,
+    "median_r": 1.0
+  },
+  "sheets": [
+    "sheet_1.jpg",
+    "sheet_2.jpg",
+    "sheet_3.jpg",
+    "sheet_4.jpg"
+  ],
+  "verdicts": null
+}

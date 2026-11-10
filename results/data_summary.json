@@ -1,0 +1,101 @@
+{
+  "crop_recipe": {
+    "context": 1.1,
+    "fill_rgb": [
+      123,
+      117,
+      104
+    ],
+    "size_bins_px": [
+      32,
+      96
+    ],
+    "ir_threshold": 2.0
+  },
+  "val": {
+    "images": 452,
+    "raw_boxes": 6681,
+    "degenerate_dropped": 0,
+    "exact_duplicates_dropped": 51,
+    "boxes": 6630,
+    "ir_images": 6,
+    "crops": 6630,
+    "groups": 355,
+    "size_bins": {
+      ">=96": 4781,
+      "32-95": 1832,
+      "<32": 17
+    },
+    "ir_crops": 30,
+    "truncated_crops": 269,
+    "occluded_iou_ge_0_3": 1057,
+    "low_support_classes": [
+      "Mini-bus",
+      "Tempo-traveller",
+      "Others"
+    ]
+  },
+  "test": {
+    "images": 477,
+    "raw_boxes": 6350,
+    "degenerate_dropped": 0,
+    "exact_duplicates_dropped": 51,
+    "boxes": 6299,
+    "ir_images": 11,
+    "crops": 6299,
+    "groups": 410,
+    "size_bins": {
+      ">=96": 4796,
+      "32-95": 1496,
+      "<32": 7
+    },
+    "ir_crops": 57,
+    "truncated_crops": 238,
+    "occluded_iou_ge_0_3": 919,
+    "low_support_classes": [
+      "Mini-bus",
+      "Tempo-traveller",
+      "Others"
+    ]
+  },
+  "class_counts": {
+    "val": {
+      "Hatchback": 619,
+      "Sedan": 379,
+      "SUV": 347,
+      "MUV": 223,
+      "Bus": 212,
+      "Truck": 350,
+      "Three-wheeler": 1006,
+      "Two-wheeler": 2981,
+      "LCV": 329,
+      "Mini-bus": 18,
+      "Tempo-traveller": 21,
+      "Bicycle": 97,
+      "Van": 44,
+      "Others": 4
+    },
+    "test": {
+      "Hatchback": 607,
+      "Sedan": 356,
+      "SUV": 300,
+      "MUV": 212,
+      "Bus": 147,
+      "Truck": 339,
+      "Three-wheeler": 937,
+      "Two-wheeler": 2816,
+      "LCV": 372,
+      "Mini-bus": 25,
+      "Tempo-traveller": 28,
+      "Bicycle": 95,
+      "Van": 62,
+      "Others": 3
+    }
+  },
+  "matches_assignment1": true,
+  "diff_vs_assignment1": {
+    "val": {},
+    "test": {}
+  },
+  "example_figure": "/Users/yashrenwa/Personal/Projects/uvh26-clip-zeroshot/results/figures/val_examples.png"
+}
