@@ -4,6 +4,11 @@
       "file": "prompts/baseline.yaml",
       "sha256": "2e69fdead32879056fbb4607b06c8215f537a0ebaf0dfe9bdb539c908a3a6c54",
       "frozen_at": "2026-11-10 21:27 IST"
+    },
+    "ensemble": {
+      "file": "prompts/ensemble.yaml",
+      "sha256": "84219edffad0223da81fd2bcb79708f01584fa5ccf17582bb5165ce022b544a9",
+      "frozen_at": "2026-11-10 21:45 IST"
     }
   }
 }
