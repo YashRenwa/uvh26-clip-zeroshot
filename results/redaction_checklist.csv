@@ -1,6 +1,6 @@
 file,in_report,shows_pixels,faces_still_detected_after_redaction,checked_by_yash,plates_or_faces_to_add_to_redact_csv
 report/figures/failures_first5.png,True,True,0,"2026-11-11: checked, nothing to redact",none
-report/figures/leak_pair_12.jpg,True,True,2,,
+report/figures/leak_pair_12.jpg,True,True,2,2026-11-11: Claude checked by eye at Yash's request: the 2 detections are a painted decoration on the truck cab and the kerb (false positives); tanker phone number blurred via redact.csv; awaiting Yash's confirmation,702895 phone number (added)
 results/figures/val_examples.png,True,True,1,"2026-11-11: Claude checked by eye at Yash's request, Yash confirmed; leftover detections are false positives",none
 results/failures/confident_sheet_1.png,False,True,0,"2026-11-11: checked, nothing to redact",none
 results/failures/random_sheet_1.png,False,True,1,"2026-11-11: Claude checked by eye at Yash's request, Yash confirmed; leftover detections are false positives",none

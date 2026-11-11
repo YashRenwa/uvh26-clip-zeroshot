@@ -59,6 +59,19 @@ def literals(template: str) -> list[str]:
     return [m for m in re.findall(r"\d[\d,]*(?:\.\d+)?", t) if m.replace(",", "") not in ALLOWED]
 
 
+def irc_panels() -> None:
+    """IRC-only panels of the test reliability and coverage figures (the 14-class panels stay in the notebook)."""
+    from PIL import Image
+
+    rel = Image.open(ROOT / "results/figures/test_reliability.png").convert("RGB")
+    rel.crop((650, 40, rel.width, rel.height)).save(REPORT / "figures" / "test_reliability_irc.png")
+    cov = Image.open(ROOT / "results/figures/test_coverage.png").convert("RGB")
+    axis, panel = cov.crop((0, 0, 80, cov.height)), cov.crop((690, 0, cov.width, cov.height))
+    out = Image.new("RGB", (axis.width + panel.width, cov.height), cov.getpixel((5, 5)))
+    out.paste(axis, (0, 0)), out.paste(panel, (axis.width, 0))
+    out.save(REPORT / "figures" / "test_coverage_irc.png")
+
+
 def main() -> None:
     n = json.loads((REPORT / "numbers.json").read_text())
     tpl = (REPORT / "report_template.html").read_text()
@@ -68,6 +81,7 @@ def main() -> None:
     out = PH.sub(lambda m: fmt(n[m.group(1)], m.group(2)), tpl)
     for name, src in FIGS.items():
         shutil.copy2(ROOT / src, REPORT / "figures" / name)
+    irc_panels()
     (REPORT / "report.html").write_text(out)
     used = len(PH.findall(tpl))
     print(f"report.html: {used} numbers filled from numbers.json; literals not on the allow-list: {stray or 'none'}")

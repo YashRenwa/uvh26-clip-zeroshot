@@ -41,5 +41,5 @@ pattern holds across all crops, not just the 30 drawn. Caveats: IR frames are to
 ## Confident errors (the 10 that pass the rule unseen)
 
 5 of 10 are label errors where CLIP is right (#1, #6, #7, #9, #10). So the accepted IRC accuracy on
-test (95.2%) is a **lower bound**: by-eye, at least half of the sampled "errors" in the accepted set are
+test (95.2%) is **likely an underestimate** (label errors in the accepted draw cut against CLIP, though noise can cut both ways): by-eye, at least half of the sampled "errors" in the accepted set are
 label errors. The secondary label check gives 95.9% when crops in duplicate groups are excluded.

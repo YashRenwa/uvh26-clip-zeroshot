@@ -136,10 +136,13 @@ car units), which needs per-frame counts by vehicle class. At a new camera there
 model nobody trained on these cameras turn boxed vehicles into class counts good enough for PCU, and can
 its own score say which crops a person must check?
 
-**Why Track C.** A zero-shot vision-language model is the only option that gives class names at a camera
-with zero labelled images: the classes are described in words, not learned. Track A (ViT vs CNN) needs a
-labelled training set for both models, which is the thing an unlabelled camera lacks. Track B (generation)
-produces images, not counts; synthetic traffic would not tell a planner anything about this junction.
+**Why Track C, and not A or B.** The constraint at a new junction is the camera, not the model: on the day
+it goes up there is not one labelled frame from it. Track A compares a ViT with a CNN, but both still need
+a labelled training set, which is exactly what this camera lacks, and Assignment 1 already measured what
+labelled training buys on these frames. Track B generates images, and a synthetic traffic scene says
+nothing about how many trucks crossed this junction this morning. Only a vision-language model can be told
+what a class is in words, so Track C is the one track whose question is the deployment question: how far
+does a frozen model get with no labels, and can its own score tell me which vehicles still need a person?
 
 **Scope.** Boxes are the dataset's ground-truth boxes (UVH-26-ST), so this measures classification only.
 Assignment 1's fine-tuned YOLOv8 on the same split is quoted once, as what labelled training bought; its
@@ -195,13 +198,15 @@ pd.Series(prov["contamination"]).to_frame("contamination notes")
 """)
 
 md("""
-**What CLIP has probably seen.** CLIP ViT-B/16 was trained on 400M web image-text pairs collected before
-January 2021; the UVH-26 frames were captured in February 2025 and published in 2025, so these exact
-frames cannot be in its training data. Generic Indian street photos with captions such as "auto-rickshaw"
-very likely are, which is what zero-shot relies on. Within the project, the prompt wording and the
-threshold were chosen on val only; about 10% of test images share a camera with a val image (by-eye
-audit above), and the prompts were written from the dataset's class definitions and revised at most
-twice, so the effect of that overlap on the test numbers is small.
+**What the model has seen.** CLIP ViT-B/16 was trained on 400M web image–text pairs collected before
+2021; these frames were captured in 2025 and published after, so the test images themselves cannot be in
+its training data. Captioned Indian street photos ("auto-rickshaw", "Tata Ace") very likely are, which is
+what zero-shot relies on. **Within the project**, prompts and the review threshold were tuned on val only.
+A by-eye audit of 40 seeded random test images against their most similar val image found
+4 same-camera pairs: val–test camera overlap ≈ 10% (95% CI 4%–23%).
+Gradient-thumbnail similarity misses some of them (pairs #12 and #13 are the same camera at g ≈ 0.25), so the
+audit, not a threshold count, is the estimate. Prompts were written from the class definitions and revised
+at most twice, so this overlap can flatter test only slightly.
 """, cell_id="yash-contamination")
 
 md("""
